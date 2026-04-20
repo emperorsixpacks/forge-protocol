@@ -1,0 +1,19 @@
+{
+  "name": "marc-agents",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "start": "tsx index.ts"
+  },
+  "dependencies": {
+    "@stellar/stellar-sdk": "^14.6.1",
+    "blessed": "^0.1.81",
+    "dotenv": "^16.4.5",
+    "marc-stellar-sdk": "file:../../sdk"
+  },
+  "devDependencies": {
+    "@types/node": "^22.0.0",
+    "tsx": "^4.19.0"
+  }
+}

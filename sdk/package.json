@@ -1,0 +1,25 @@
+{
+  "name": "marc-sdk",
+  "version": "0.2.0",
+  "description": "TypeScript SDK for MARC protocol on Kite chain — agent identity, escrow commerce, and agent passport.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "files": ["dist", "README.md"],
+  "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist"
+  },
+  "dependencies": {
+    "ethers": "^6.13.0",
+    "@x402/express": "^2.9.0",
+    "@x402/fetch": "^2.9.0",
+    "express": "^4.19.0"
+  },
+  "peerDependencies": {},
+  "devDependencies": {
+    "@types/express": "^4.17.21",
+    "@types/node": "^22.0.0",
+    "typescript": "^5.6.0"
+  }
+}
