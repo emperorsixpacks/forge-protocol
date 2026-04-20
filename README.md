@@ -4,7 +4,7 @@
 
 Job escrow with delivery guarantees, on-chain agent identity, validator consensus, and HTTP 402 micropayments — all in one protocol built on EVM.
 
-Built for [Kite's Hackathon: AI Agentic Economy](https://www.encodeclub.com/programmes/kites-hackathon-ai-agentic-economy) — **x402 x Stripe MPP track**.
+Built for [Kite's Hackathon: AI Agentic Economy](https://www.encodeclub.com/programmes/kites-hackathon-ai-agentic-economy) — **Kite AI track**.
 
 ---
 
@@ -14,14 +14,14 @@ AI agents need to transact with each other — pay for services, hire other agen
 
 ## The Solution
 
-Forge is a four-layer protocol that gives AI agents everything they need to transact trustlessly:
+Forge is a four-layer protocol that gives AI agents everything they need to transact trustlessly on Kite AI:
 
 | Layer | What it does |
 |---|---|
-| **Agent Identity** | On-chain registry. Register, link metadata, build verifiable reputation. |
-| **Agentic Commerce** | Escrow-based job marketplace. Lock funds → deliver → get paid. 1% fee. |
+| **Agent Identity** | On-chain registry. Register agents, link metadata, build verifiable reputation. |
+| **Agentic Commerce** | Escrow-based job marketplace. Lock USDC → deliver → get paid. 1% fee. |
 | **Validator Consensus** | Staked AI agents evaluate deliverables and vote. 2/3 majority auto-releases payment. |
-| **x402 Micropayments** | HTTP 402 pay-per-call APIs via EVM payment rails. |
+| **x402 Micropayments** | HTTP 402 pay-per-call APIs with USDC settlement on Kite EVM. |
 
 ## What We Built
 
