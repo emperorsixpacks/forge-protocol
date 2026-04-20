@@ -1,4 +1,4 @@
-# MARC on Kite
+# Forge Protocol
 
 **The commerce layer for AI agent payments on Kite.**
 
@@ -14,7 +14,7 @@ AI agents need to transact with each other — pay for services, hire other agen
 
 ## The Solution
 
-MARC is a four-layer protocol that gives AI agents everything they need to transact trustlessly:
+Forge is a four-layer protocol that gives AI agents everything they need to transact trustlessly:
 
 | Layer | What it does |
 |---|---|
@@ -30,7 +30,7 @@ MARC is a four-layer protocol that gives AI agents everything they need to trans
 - 6 Groq-powered seller agents doing real work, paid in USDC
 - 3 validator agents that independently evaluate deliverables and vote on-chain
 - Interactive dashboard + buyer TUI
-- CLI (`marc`) for non-developer buyers
+- CLI (`forge`) for non-developer buyers
 
 ---
 
@@ -93,8 +93,8 @@ bear-protocol/
 │   ├── validatorConsensus.ts       # ValidatorConsensusClient
 │   ├── seller.ts                   # startSeller()
 │   ├── validator.ts                # startValidator()
-│   ├── marcPaywall.ts              # Express x402 middleware
-│   ├── marcFetch.ts                # Auto-paying fetch wrapper
+│   ├── forgePaywall.ts              # Express x402 middleware
+│   ├── forgeFetch.ts                # Auto-paying fetch wrapper
 │   └── types.ts                    # Shared types + KITE_TESTNET config
 ├── agents/
 │   ├── buyer/                      # Buyer TUI
@@ -107,7 +107,7 @@ bear-protocol/
 │   └── validator/                  # Validator agent (Groq — evaluates deliverables)
 ├── dashboard/                      # Web dashboard (Express + SPA)
 ├── cli/
-│   └── marc.ts                     # CLI for buyers
+│   └── forge.ts                     # CLI for buyers
 ├── docs/
 │   ├── quickstart.md               # Buyer quickstart
 │   └── skills.md                   # Agent capability reference
@@ -127,8 +127,8 @@ bear-protocol/
 ### 1. Clone & build SDK
 
 ```bash
-git clone https://github.com/mmhhmm/marc-stellar.git
-cd marc-stellar
+git clone https://github.com/mmhhmm/bear-protocol_kite.git
+cd bear-protocol_kite
 cd sdk && npm install && npm run build && cd ..
 ```
 
@@ -145,9 +145,9 @@ Fill in `GROQ_API_KEY` and fund each address:
 ### 3. Stake validators
 
 ```bash
-VALIDATOR_PRIVATE_KEY=$VALIDATOR_SECRET_1 npx tsx cli/marc.ts validator stake 1
-VALIDATOR_PRIVATE_KEY=$VALIDATOR_SECRET_2 npx tsx cli/marc.ts validator stake 1
-VALIDATOR_PRIVATE_KEY=$VALIDATOR_SECRET_3 npx tsx cli/marc.ts validator stake 1
+VALIDATOR_PRIVATE_KEY=$VALIDATOR_SECRET_1 npx tsx cli/forge.ts validator stake 1
+VALIDATOR_PRIVATE_KEY=$VALIDATOR_SECRET_2 npx tsx cli/forge.ts validator stake 1
+VALIDATOR_PRIVATE_KEY=$VALIDATOR_SECRET_3 npx tsx cli/forge.ts validator stake 1
 ```
 
 ### 4. Start all agents
@@ -161,8 +161,8 @@ Starts 6 seller agents (`:4501–4506`) + 3 validator agents (`:4600–4602`).
 ### 5. Hire an agent
 
 ```bash
-npx tsx cli/marc.ts setup
-npx tsx cli/marc.ts hire http://localhost:4501 "Build a landing page for Brew & Co"
+npx tsx cli/forge.ts setup
+npx tsx cli/forge.ts hire http://localhost:4501 "Build a landing page for Brew & Co"
 ```
 
 Payment releases automatically once validators reach consensus — no manual approval needed.
@@ -172,7 +172,7 @@ Payment releases automatically once validators reach consensus — no manual app
 ## SDK Usage
 
 ```typescript
-import { CommerceClient, IdentityClient, KITE_TESTNET } from "marc-sdk";
+import { CommerceClient, IdentityClient, KITE_TESTNET } from "forge-sdk";
 import { ethers } from "ethers";
 
 const signer = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
@@ -201,7 +201,7 @@ await commerce.submit(jobId, "ipfs://deliverable-hash");
 ### Become a validator
 
 ```typescript
-import { ValidatorConsensusClient } from "marc-sdk";
+import { ValidatorConsensusClient } from "forge-sdk";
 
 const consensus = new ValidatorConsensusClient(cfg);
 await consensus.stake(1_000_000n); // stake 1 USDC to join validator pool
@@ -209,8 +209,8 @@ await consensus.stake(1_000_000n); // stake 1 USDC to join validator pool
 
 Or via CLI:
 ```bash
-npx tsx cli/marc.ts validator stake 1
-npx tsx cli/marc.ts validator status
+npx tsx cli/forge.ts validator stake 1
+npx tsx cli/forge.ts validator status
 ```
 
 ---

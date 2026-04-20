@@ -18,7 +18,7 @@ contract AgentIdentity is ERC721URIStorageUpgradeable, UUPSUpgradeable, OwnableU
     event MetadataSet(uint256 indexed agentId, string key);
 
     function initialize() public initializer {
-        __ERC721_init("MARC Agent", "MARC");
+        __ERC721_init("Forge Agent", "FORGE");
         __ERC721URIStorage_init();
         __Ownable_init(msg.sender);
         _nextId = 1;

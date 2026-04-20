@@ -1,4 +1,4 @@
-# MARC SDK Documentation
+# Forge SDK Documentation
 
 ## Installation
 
@@ -16,15 +16,15 @@ npm install file:../sdk
 ## Configuration
 
 ```typescript
-import { TESTNET, type MarcConfig } from "marc-stellar-sdk";
+import { TESTNET, type ForgeConfig } from "forge-sdk";
 
-const cfg: MarcConfig = {
+const cfg: ForgeConfig = {
   ...TESTNET,                          // use testnet defaults
   onTx: (hash) => console.log(hash),  // optional: called after every tx
 };
 ```
 
-### MarcConfig fields
+### ForgeConfig fields
 
 | Field | Type | Description |
 |---|---|---|
@@ -151,14 +151,14 @@ const fee = await commerce.feeBps(); // 100
 
 ---
 
-## marcPaywall (Express middleware)
+## forgePaywall (Express middleware)
 
 Protect any Express route with an x402 paywall. Buyers must pay before accessing.
 
 ```typescript
-import { marcPaywall } from "marc-stellar-sdk";
+import { forgePaywall } from "forge-sdk";
 
-app.use("/api/work", marcPaywall({
+app.use("/api/work", forgePaywall({
   payTo: seller.publicKey(),       // receives micropayments
   price: "$0.01",                  // price per call
   network: "stellar:testnet",
@@ -179,14 +179,14 @@ curl https://channels.openzeppelin.com/testnet/gen
 
 ---
 
-## marcFetch (auto-paying fetch)
+## forgeFetch (auto-paying fetch)
 
 Drop-in replacement for `fetch` that automatically handles 402 responses.
 
 ```typescript
-import { marcFetch } from "marc-stellar-sdk";
+import { forgeFetch } from "forge-sdk";
 
-const paidFetch = marcFetch({
+const paidFetch = forgeFetch({
   signer: keypair,
   rpcUrl: TESTNET.rpcUrl,
 });

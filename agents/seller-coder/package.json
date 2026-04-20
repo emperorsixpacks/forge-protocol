@@ -1,5 +1,5 @@
 {
-  "name": "marc-agents",
+  "name": "forge-agents",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -13,7 +13,7 @@
     "ethers": "^6.13.0",
     "express": "^4.19.0",
     "groq-sdk": "^1.1.2",
-    "marc-sdk": "file:../../sdk"
+    "forge-sdk": "file:../../sdk"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

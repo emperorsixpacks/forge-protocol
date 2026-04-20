@@ -145,6 +145,14 @@ declare module "hardhat/types/runtime" {
       name: "AgentPassport",
       signerOrOptions?: ethers.Signer | FactoryOptions
     ): Promise<Contracts.AgentPassport__factory>;
+    getContractFactory(
+      name: "IAgenticCommerce",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.IAgenticCommerce__factory>;
+    getContractFactory(
+      name: "ValidatorConsensus",
+      signerOrOptions?: ethers.Signer | FactoryOptions
+    ): Promise<Contracts.ValidatorConsensus__factory>;
 
     getContractAt(
       name: "OwnableUpgradeable",
@@ -311,6 +319,16 @@ declare module "hardhat/types/runtime" {
       address: string | ethers.Addressable,
       signer?: ethers.Signer
     ): Promise<Contracts.AgentPassport>;
+    getContractAt(
+      name: "IAgenticCommerce",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.IAgenticCommerce>;
+    getContractAt(
+      name: "ValidatorConsensus",
+      address: string | ethers.Addressable,
+      signer?: ethers.Signer
+    ): Promise<Contracts.ValidatorConsensus>;
 
     deployContract(
       name: "OwnableUpgradeable",
@@ -444,6 +462,14 @@ declare module "hardhat/types/runtime" {
       name: "AgentPassport",
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.AgentPassport>;
+    deployContract(
+      name: "IAgenticCommerce",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IAgenticCommerce>;
+    deployContract(
+      name: "ValidatorConsensus",
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ValidatorConsensus>;
 
     deployContract(
       name: "OwnableUpgradeable",
@@ -610,6 +636,16 @@ declare module "hardhat/types/runtime" {
       args: any[],
       signerOrOptions?: ethers.Signer | DeployContractOptions
     ): Promise<Contracts.AgentPassport>;
+    deployContract(
+      name: "IAgenticCommerce",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.IAgenticCommerce>;
+    deployContract(
+      name: "ValidatorConsensus",
+      args: any[],
+      signerOrOptions?: ethers.Signer | DeployContractOptions
+    ): Promise<Contracts.ValidatorConsensus>;
 
     // default types
     getContractFactory(

@@ -42,7 +42,7 @@ export interface LLMProvider {
   complete(prompt: string): Promise<string>;
 }
 
-export interface MarcConfig {
+export interface ForgeConfig {
   /** ethers Signer (for write ops) or Provider (for read-only). */
   signerOrProvider: Signer | Provider;
   identityContract: Address;

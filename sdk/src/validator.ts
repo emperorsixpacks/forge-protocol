@@ -4,7 +4,7 @@ import { ValidatorConsensusClient } from "./validatorConsensus.js";
 import { CommerceClient } from "./commerce.js";
 import { KITE_TESTNET } from "./types.js";
 import { createLogger } from "./logger.js";
-import type { LLMProvider, MarcConfig } from "./types.js";
+import type { LLMProvider, ForgeConfig } from "./types.js";
 
 export interface ValidatorConfig {
   port: number;
@@ -17,7 +17,7 @@ export async function startValidator(validatorCfg: ValidatorConfig) {
   const provider = new ethers.JsonRpcProvider(process.env.RPC_URL ?? KITE_TESTNET.rpcUrl);
   const signer = new ethers.Wallet(process.env.VALIDATOR_PRIVATE_KEY!, provider);
 
-  const cfg: MarcConfig = {
+  const cfg: ForgeConfig = {
     signerOrProvider: signer,
     ...KITE_TESTNET,
     onTx: (hash) => log.info("tx", { hash, url: `https://testnet.kitescan.ai/tx/${hash}` }),
@@ -86,7 +86,7 @@ Reply with exactly one word: APPROVE or REJECT`;
   app.use(express.json());
 
   app.get("/", (_req, res) => res.json({
-    name: "marc-validator",
+    name: "forge-validator",
     address: signer.address,
     polling_interval_ms: interval,
   }));

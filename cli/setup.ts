@@ -2,25 +2,25 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { ethers } from "ethers";
-import { KITE_TESTNET } from "marc-sdk";
+import { KITE_TESTNET } from "forge-sdk";
 
-const CONFIG_PATH = join(homedir(), ".marc", "config.json");
+const CONFIG_PATH = join(homedir(), ".forge", "config.json");
 
-export interface MarcWallet {
+export interface ForgeWallet {
   address: string;
   privateKey: string;
 }
 
-export function loadWallet(): MarcWallet {
+export function loadWallet(): ForgeWallet {
   if (!existsSync(CONFIG_PATH)) {
-    console.error(JSON.stringify({ error: "No wallet found. Run: marc setup" }));
+    console.error(JSON.stringify({ error: "No wallet found. Run: forge setup" }));
     process.exit(1);
   }
   return JSON.parse(readFileSync(CONFIG_PATH, "utf8"));
 }
 
-export function saveWallet(wallet: MarcWallet) {
-  mkdirSync(join(homedir(), ".marc"), { recursive: true });
+export function saveWallet(wallet: ForgeWallet) {
+  mkdirSync(join(homedir(), ".forge"), { recursive: true });
   writeFileSync(CONFIG_PATH, JSON.stringify(wallet, null, 2), { mode: 0o600 });
 }
 
@@ -40,7 +40,7 @@ export async function cmdSetup() {
   console.log(JSON.stringify({
     address: wallet.address,
     config: CONFIG_PATH,
-    next: `Fund your wallet with USDC on Kite testnet, then run: marc setup --wait`,
+    next: `Fund your wallet with USDC on Kite testnet, then run: forge setup --wait`,
     faucet: "https://faucet.gokite.ai",
     usdc_contract: KITE_TESTNET.usdcToken,
   }, null, 2));

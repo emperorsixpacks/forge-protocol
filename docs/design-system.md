@@ -66,7 +66,7 @@ Base 4px scale: 4, 8, 12, 16, 24, 32, 48, 64, 96, 128.
 ### Navigation bar
 - Height: 72px
 - Sticky top, subtle bottom border on scroll
-- Logo (left): 32px yellow square with black "M" glyph + "MARC" wordmark in black
+- Logo (left): 32px yellow square with black "M" glyph + "FORGE" wordmark in black
 - Center: text links `Home` `Protocol` `About`, medium weight, gray when inactive, black when active
 - Right cluster: icon buttons (GitHub, X, docs book, theme toggle) then orange pill `Launch App`
 

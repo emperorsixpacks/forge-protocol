@@ -5,7 +5,7 @@ import { CommerceClient } from "./commerce.js";
 import { KITE_TESTNET } from "./types.js";
 import { encrypt } from "./crypto.js";
 import { createLogger } from "./logger.js";
-import type { LLMProvider, MarcConfig } from "./types.js";
+import type { LLMProvider, ForgeConfig } from "./types.js";
 
 export interface SellerConfig {
   agentId: string;
@@ -36,7 +36,7 @@ export async function startSeller(sellerCfg: SellerConfig) {
   const provider = new ethers.JsonRpcProvider(process.env.RPC_URL ?? KITE_TESTNET.rpcUrl);
   const signer = new ethers.Wallet(process.env.SELLER_PRIVATE_KEY!, provider);
 
-  const cfg: MarcConfig = {
+  const cfg: ForgeConfig = {
     signerOrProvider: signer,
     ...KITE_TESTNET,
     onTx: (hash) => log.info("tx", { hash, url: `https://testnet.kitescan.ai/tx/${hash}` }),

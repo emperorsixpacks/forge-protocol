@@ -72,3 +72,7 @@ export type { AgentIdentity } from "./src/AgentIdentity";
 export { AgentIdentity__factory } from "./factories/src/AgentIdentity__factory";
 export type { AgentPassport } from "./src/AgentPassport";
 export { AgentPassport__factory } from "./factories/src/AgentPassport__factory";
+export type { IAgenticCommerce } from "./src/ValidatorConsensus.sol/IAgenticCommerce";
+export { IAgenticCommerce__factory } from "./factories/src/ValidatorConsensus.sol/IAgenticCommerce__factory";
+export type { ValidatorConsensus } from "./src/ValidatorConsensus.sol/ValidatorConsensus";
+export { ValidatorConsensus__factory } from "./factories/src/ValidatorConsensus.sol/ValidatorConsensus__factory";

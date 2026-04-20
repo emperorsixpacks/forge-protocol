@@ -1,5 +1,5 @@
 import { Contract, ContractRunner } from "ethers";
-import type { Session, MarcConfig } from "./types.js";
+import type { Session, ForgeConfig } from "./types.js";
 
 const ABI = [
   "function openSession(address agent, address token, uint256 maxSpend, uint256 expiresAt) returns (uint64)",
@@ -17,7 +17,7 @@ const ERC20_ABI = [
 export class PassportClient {
   private contract: Contract;
 
-  constructor(private cfg: MarcConfig) {
+  constructor(private cfg: ForgeConfig) {
     this.contract = new Contract(cfg.passportContract, ABI, cfg.signerOrProvider as ContractRunner);
   }
 

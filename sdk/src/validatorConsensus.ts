@@ -1,5 +1,5 @@
 import { Contract, ContractRunner } from "ethers";
-import type { MarcConfig } from "./types.js";
+import type { ForgeConfig } from "./types.js";
 
 const ABI = [
   "function stake(uint256 amount)",
@@ -19,7 +19,7 @@ const ERC20_ABI = ["function approve(address spender, uint256 amount) returns (b
 export class ValidatorConsensusClient {
   private contract: Contract;
 
-  constructor(private cfg: MarcConfig) {
+  constructor(private cfg: ForgeConfig) {
     this.contract = new Contract(cfg.validatorConsensusContract, ABI, cfg.signerOrProvider as ContractRunner);
   }
 

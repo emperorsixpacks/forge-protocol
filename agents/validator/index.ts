@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { startValidator, groqProvider } from "marc-sdk";
+import { startValidator, groqProvider } from "forge-sdk";
 
 startValidator({
   port: Number(process.env.VALIDATOR_PORT ?? 4600),

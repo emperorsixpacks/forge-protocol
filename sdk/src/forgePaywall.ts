@@ -1,7 +1,7 @@
 import { paymentMiddleware, x402ResourceServer } from "@x402/express";
 import type { RequestHandler } from "express";
 
-export interface MarcPaywallOptions {
+export interface ForgePaywallOptions {
   /** EVM address to receive payment (0x...). */
   payTo: string;
   /** Price in USD cents as string e.g. "0.01" */
@@ -11,7 +11,7 @@ export interface MarcPaywallOptions {
   description?: string;
 }
 
-export function marcPaywall(opts: MarcPaywallOptions): RequestHandler {
+export function forgePaywall(opts: ForgePaywallOptions): RequestHandler {
   const { payTo, price, network = "eip155:2368", description = "MARC API call" } = opts;
   const typedNetwork = network as `${string}:${string}`;
 

@@ -1,9 +1,9 @@
 import "dotenv/config";
 import blessed from "blessed";
 import { Keypair, Contract, Account, TransactionBuilder, BASE_FEE, Address, scValToNative, rpc } from "@stellar/stellar-sdk";
-import { IdentityClient, CommerceClient, TESTNET, type MarcConfig } from "marc-stellar-sdk";
+import { IdentityClient, CommerceClient, TESTNET, type ForgeConfig } from "forge-sdk";
 
-const cfg: MarcConfig = {
+const cfg: ForgeConfig = {
   rpcUrl: process.env.STELLAR_RPC_URL ?? TESTNET.rpcUrl,
   networkPassphrase: process.env.STELLAR_NETWORK_PASSPHRASE ?? TESTNET.networkPassphrase,
   identityContract: process.env.AGENT_IDENTITY_CONTRACT || TESTNET.identityContract,
@@ -31,12 +31,12 @@ async function getUsdc(pubkey: string): Promise<string> {
 const buyer = Keypair.fromSecret(process.env.BUYER_SECRET!);
 const SELLER_URLS = (process.env.SELLER_URLS ?? "http://localhost:4501,http://localhost:4502,http://localhost:4503,http://localhost:4504,http://localhost:4505,http://localhost:4506").split(",");
 
-const screen = blessed.screen({ smartCSR: true, title: "MARC Buyer Agent" });
+const screen = blessed.screen({ smartCSR: true, title: "Forge Buyer Agent" });
 
 const header = blessed.box({
   top: 0, left: 0, width: "100%", height: 3,
   tags: true,
-  content: `{center}{bold}{cyan-fg}MARC Buyer Agent{/cyan-fg}{/bold} — {gray-fg}${buyer.publicKey().slice(0, 20)}...{/gray-fg}{/center}`,
+  content: `{center}{bold}{cyan-fg}Forge Buyer Agent{/cyan-fg}{/bold} — {gray-fg}${buyer.publicKey().slice(0, 20)}...{/gray-fg}{/center}`,
 });
 
 const balanceBar = blessed.box({

@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { startSeller, groqProvider } from "marc-sdk";
+import { startSeller, groqProvider } from "forge-sdk";
 
 startSeller({
   agentId: "seller-webbuilder",

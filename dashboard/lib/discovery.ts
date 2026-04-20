@@ -1,5 +1,5 @@
-import { IdentityClient, CommerceClient } from "marc-stellar-sdk";
-import type { Agent, Job } from "marc-stellar-sdk";
+import { IdentityClient, CommerceClient } from "forge-sdk";
+import type { Agent, Job } from "forge-sdk";
 import { cfg } from "./config.js";
 
 const identity = new IdentityClient(cfg);

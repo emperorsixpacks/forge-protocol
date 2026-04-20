@@ -1,5 +1,5 @@
 import { Contract, ContractRunner } from "ethers";
-import type { Job, JobStatus, MarcConfig } from "./types.js";
+import type { Job, JobStatus, ForgeConfig } from "./types.js";
 import { ValidatorConsensusClient } from "./validatorConsensus.js";
 
 const ABI = [
@@ -22,7 +22,7 @@ const ERC20_ABI = [
 export class CommerceClient {
   private contract: Contract;
 
-  constructor(private cfg: MarcConfig) {
+  constructor(private cfg: ForgeConfig) {
     this.contract = new Contract(cfg.commerceContract, ABI, cfg.signerOrProvider as ContractRunner);
   }
 

@@ -1,6 +1,6 @@
 import { wrapFetchWithPayment, x402Client } from "@x402/fetch";
 
-export interface MarcFetchOptions {
+export interface ForgeFetchOptions {
   /** Configured x402Client with EVM scheme registered */
   client: x402Client;
 }
@@ -17,9 +17,9 @@ export interface MarcFetchOptions {
  *
  * const signer = new ethers.Wallet(privateKey, provider);
  * const client = new x402Client().register("eip155:2368", new ExactEvmScheme(signer));
- * const paidFetch = marcFetch({ client });
+ * const paidFetch = forgeFetch({ client });
  * ```
  */
-export function marcFetch(opts: MarcFetchOptions) {
+export function forgeFetch(opts: ForgeFetchOptions) {
   return wrapFetchWithPayment(fetch, opts.client);
 }

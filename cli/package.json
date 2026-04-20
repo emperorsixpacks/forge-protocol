@@ -1,15 +1,15 @@
 {
-  "name": "marc-cli",
+  "name": "forge-cli",
   "version": "0.1.0",
   "type": "module",
-  "bin": { "marc": "./marc.ts" },
+  "bin": { "forge": "./forge.ts" },
   "scripts": {
-    "start": "tsx marc.ts"
+    "start": "tsx forge.ts"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
     "ethers": "^6.13.0",
-    "marc-sdk": "file:../sdk"
+    "forge-sdk": "file:../sdk"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",

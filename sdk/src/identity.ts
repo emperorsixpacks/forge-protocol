@@ -1,5 +1,5 @@
 import { Contract, ContractRunner } from "ethers";
-import type { Agent, MarcConfig } from "./types.js";
+import type { Agent, ForgeConfig } from "./types.js";
 
 const ABI = [
   "function register(string agentURI) returns (uint256)",
@@ -23,7 +23,7 @@ const ABI = [
 export class IdentityClient {
   private contract: Contract;
 
-  constructor(private cfg: MarcConfig) {
+  constructor(private cfg: ForgeConfig) {
     this.contract = new Contract(cfg.identityContract, ABI, cfg.signerOrProvider as ContractRunner);
   }
 

@@ -1,14 +1,14 @@
 #!/usr/bin/env tsx
 import "dotenv/config";
 import { ethers } from "ethers";
-import { IdentityClient, CommerceClient, ValidatorConsensusClient, KITE_TESTNET, decrypt, type MarcConfig } from "marc-sdk";
+import { IdentityClient, CommerceClient, ValidatorConsensusClient, KITE_TESTNET, decrypt, type ForgeConfig } from "forge-sdk";
 import { loadWallet, cmdSetup, cmdSetupWait } from "./setup.js";
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
 const SELLER_URLS = (process.env.SELLER_URLS ?? "http://localhost:4501,http://localhost:4502,http://localhost:4503,http://localhost:4504,http://localhost:4505,http://localhost:4506").split(",");
 
-function getConfig(): { cfg: MarcConfig; signer: ethers.Wallet } {
+function getConfig(): { cfg: ForgeConfig; signer: ethers.Wallet } {
   const { privateKey } = loadWallet();
   const provider = new ethers.JsonRpcProvider(process.env.RPC_URL ?? KITE_TESTNET.rpcUrl);
   const signer = new ethers.Wallet(privateKey, provider);
@@ -30,7 +30,7 @@ async function cmdList() {
 }
 
 async function cmdHire(agentUrl: string, task: string) {
-  if (!agentUrl || !task) fatal("Usage: marc hire <agentUrl> \"<task>\"");
+  if (!agentUrl || !task) fatal("Usage: forge hire <agentUrl> \"<task>\"");
   const { cfg, signer } = getConfig();
 
   const manifest = await fetch(`${agentUrl}/.well-known/agent.json`).then((r) => r.json()).catch(() => fatal(`Cannot reach agent at ${agentUrl}`));
@@ -55,14 +55,14 @@ async function cmdHire(agentUrl: string, task: string) {
 }
 
 async function cmdStatus(jobId: string) {
-  if (!jobId) fatal("Usage: marc status <jobId>");
+  if (!jobId) fatal("Usage: forge status <jobId>");
   const { cfg } = getConfig();
   const job = await new CommerceClient(cfg).getJob(BigInt(jobId));
   out({ ...job, id: job.id.toString(), budget: job.budget.toString() });
 }
 
 async function cmdResult(jobId: string) {
-  if (!jobId) fatal("Usage: marc result <jobId>");
+  if (!jobId) fatal("Usage: forge result <jobId>");
   const { cfg } = getConfig();
   const { privateKey } = loadWallet();
   const job = await new CommerceClient(cfg).getJob(BigInt(jobId));
@@ -75,14 +75,14 @@ async function cmdResult(jobId: string) {
 }
 
 async function cmdComplete(jobId: string) {
-  if (!jobId) fatal("Usage: marc complete <jobId>");
+  if (!jobId) fatal("Usage: forge complete <jobId>");
   const { cfg } = getConfig();
   await new CommerceClient(cfg).complete(BigInt(jobId));
   out({ jobId, status: "Completed" });
 }
 
 async function cmdCancel(jobId: string) {
-  if (!jobId) fatal("Usage: marc cancel <jobId>");
+  if (!jobId) fatal("Usage: forge cancel <jobId>");
   const { cfg } = getConfig();
   await new CommerceClient(cfg).cancel(BigInt(jobId));
   out({ jobId, status: "Cancelled" });
@@ -91,7 +91,7 @@ async function cmdCancel(jobId: string) {
 // ── Validator commands ────────────────────────────────────────────────────────
 
 async function cmdValidatorStake(amount?: string) {
-  if (!amount) fatal("Usage: marc validator stake <usdcAmount>");
+  if (!amount) fatal("Usage: forge validator stake <usdcAmount>");
   const { cfg } = getConfig();
   const wei = ethers.parseUnits(amount, 6); // USDC has 6 decimals on Kite
   await new ValidatorConsensusClient(cfg).stake(wei);
@@ -136,24 +136,24 @@ const commands: Record<string, () => Promise<void>> = {
     if (sub === "stake")   return cmdValidatorStake(args[1]);
     if (sub === "unstake") return cmdValidatorUnstake();
     if (sub === "status")  return cmdValidatorStatus(args[1]);
-    fatal("Usage: marc validator <stake <amount> | unstake | status [jobId]>");
+    fatal("Usage: forge validator <stake <amount> | unstake | status [jobId]>");
   },
 };
 
 if (!cmd || !commands[cmd]) {
   console.log(JSON.stringify({
-    usage: "marc <command> [args]",
+    usage: "forge <command> [args]",
     commands: {
-      setup:              "marc setup [--wait] — create wallet, optionally wait for USDC funding",
+      setup:              "forge setup [--wait] — create wallet, optionally wait for USDC funding",
       list:               "Discover available seller agents",
-      hire:               "marc hire <agentUrl> \"<task>\" — create escrow job",
-      status:             "marc status <jobId> — check job status",
-      result:             "marc result <jobId> — fetch + decrypt deliverable",
-      complete:           "marc complete <jobId> — release payment to seller",
-      cancel:             "marc cancel <jobId> — cancel job + refund",
-      "validator stake":  "marc validator stake <usdcAmount> — stake USDC to become a validator",
-      "validator unstake":"marc validator unstake — withdraw stake",
-      "validator status": "marc validator status [jobId] — show stake info or round status for a job",
+      hire:               "forge hire <agentUrl> \"<task>\" — create escrow job",
+      status:             "forge status <jobId> — check job status",
+      result:             "forge result <jobId> — fetch + decrypt deliverable",
+      complete:           "forge complete <jobId> — release payment to seller",
+      cancel:             "forge cancel <jobId> — cancel job + refund",
+      "validator stake":  "forge validator stake <usdcAmount> — stake USDC to become a validator",
+      "validator unstake":"forge validator unstake — withdraw stake",
+      "validator status": "forge validator status [jobId] — show stake info or round status for a job",
     },
   }, null, 2));
   process.exit(0);

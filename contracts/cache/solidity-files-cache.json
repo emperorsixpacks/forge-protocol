@@ -1681,6 +1681,48 @@
       "artifacts": [
         "ERC165Upgradeable"
       ]
+    },
+    "/home/emperorsixpacks/GitHub/bear-protocol_kite/contracts/src/ValidatorConsensus.sol": {
+      "lastModificationDate": 1776699301949,
+      "contentHash": "6d6b0c4f05819bfadb08b2f378b43139",
+      "sourceName": "src/ValidatorConsensus.sol",
+      "solcConfig": {
+        "version": "0.8.24",
+        "settings": {
+          "evmVersion": "cancun",
+          "optimizer": {
+            "enabled": false,
+            "runs": 200
+          },
+          "outputSelection": {
+            "*": {
+              "*": [
+                "abi",
+                "evm.bytecode",
+                "evm.deployedBytecode",
+                "evm.methodIdentifiers",
+                "metadata",
+                "storageLayout"
+              ],
+              "": [
+                "ast"
+              ]
+            }
+          }
+        }
+      },
+      "imports": [
+        "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
+        "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol",
+        "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol"
+      ],
+      "versionPragmas": [
+        "^0.8.24"
+      ],
+      "artifacts": [
+        "IAgenticCommerce",
+        "ValidatorConsensus"
+      ]
     }
   }
 }

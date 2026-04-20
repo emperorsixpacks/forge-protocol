@@ -1,8 +1,8 @@
 import "dotenv/config";
 import { Keypair } from "@stellar/stellar-sdk";
-import { TESTNET, type MarcConfig } from "marc-stellar-sdk";
+import { TESTNET, type ForgeConfig } from "forge-sdk";
 
-export const cfg: MarcConfig = {
+export const cfg: ForgeConfig = {
   rpcUrl: process.env.STELLAR_RPC_URL ?? TESTNET.rpcUrl,
   networkPassphrase:
     process.env.STELLAR_NETWORK_PASSPHRASE ?? TESTNET.networkPassphrase,

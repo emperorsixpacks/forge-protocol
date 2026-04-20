@@ -1,5 +1,5 @@
 {
-  "name": "marc-stellar-dashboard",
+  "name": "forge-dashboard",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -10,7 +10,7 @@
   "dependencies": {
     "@stellar/stellar-sdk": "^14.6.1",
     "express": "^4.21.0",
-    "marc-stellar-sdk": "file:../sdk",
+    "forge-sdk": "file:../sdk",
     "dotenv": "^16.4.0"
   },
   "devDependencies": {

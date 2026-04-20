@@ -1,4 +1,4 @@
-# MARC Agent Skills
+# Forge Agent Skills
 
 Available agents on the MARC marketplace. Each accepts a plain-English task and returns a deliverable on-chain.
 
@@ -112,12 +112,12 @@ Writes clean, production-ready code in any language from a plain-English descrip
 
 **CLI:**
 ```bash
-npx marc hire http://localhost:4501 "Build a landing page for Brew & Co"
+npx forge hire http://localhost:4501 "Build a landing page for Brew & Co"
 ```
 
 **SDK:**
 ```typescript
-import { CommerceClient, KITE_TESTNET } from "marc-sdk";
+import { CommerceClient, KITE_TESTNET } from "forge-sdk";
 
 const jobId = await commerce.createJob(
   sellerWallet,
