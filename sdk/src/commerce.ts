@@ -1,5 +1,6 @@
 import { Contract, ContractRunner } from "ethers";
 import type { Job, JobStatus, MarcConfig } from "./types.js";
+import { ValidatorConsensusClient } from "./validatorConsensus.js";
 
 const ABI = [
   "function createJob(address provider, address evaluator, address token, uint256 budget, string description) returns (uint64)",
@@ -54,6 +55,11 @@ export class CommerceClient {
     const tx = await this.contract.submit(jobId, deliverable);
     const receipt = await tx.wait();
     this.cfg.onTx?.(receipt.hash, "submit");
+
+    // auto-trigger validator consensus if configured
+    if (this.cfg.validatorConsensusContract) {
+      await new ValidatorConsensusClient(this.cfg).requestValidation(jobId);
+    }
   }
 
   async complete(jobId: bigint): Promise<void> {

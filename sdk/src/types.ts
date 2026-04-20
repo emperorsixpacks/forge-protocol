@@ -48,6 +48,7 @@ export interface MarcConfig {
   identityContract: Address;
   commerceContract: Address;
   passportContract: Address;
+  validatorConsensusContract: Address;
   /** USDC.e on Kite: 0x7aB6f3ed87C42eF0aDb67Ed95090f8bF5240149e */
   usdcToken: Address;
   onTx?: (hash: string, method: string) => void;
@@ -60,6 +61,7 @@ export const KITE_TESTNET = {
   identityContract: "0x3e0Ad2339f8e88Ff07AF2E515428527a8DF1E96A" as Address,
   commerceContract: "0xeCee1A2115a5A2c6279Bf88870e658ed813374D0" as Address,
   passportContract: "0xAe325718BdD9F07C402B8544fBbB019FD8b0A36C" as Address,
+  validatorConsensusContract: (process.env.VALIDATOR_CONSENSUS_CONTRACT ?? "") as Address,
   usdcToken: "0x7aB6f3ed87C42eF0aDb67Ed95090f8bF5240149e" as Address,
 } as const;
 

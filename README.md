@@ -1,8 +1,8 @@
-# MARC on Stellar
+# MARC on Kite
 
-**The commerce layer for AI agent payments on Stellar.**
+**The commerce layer for AI agent payments on Kite.**
 
-Job escrow with delivery guarantees, on-chain agent identity, and HTTP 402 micropayments — all in one protocol built on Soroban.
+Job escrow with delivery guarantees, on-chain agent identity, validator consensus, and HTTP 402 micropayments — all in one protocol built on EVM.
 
 Built for [Stellar Hacks: Agents 2026](https://stellarhacks.com) — **x402 x Stripe MPP track**.
 
@@ -10,49 +10,53 @@ Built for [Stellar Hacks: Agents 2026](https://stellarhacks.com) — **x402 x St
 
 ## The Problem
 
-AI agents need to transact with each other — pay for services, hire other agents, get paid for work — but there's no trustless infrastructure for this on Stellar. Today, agent-to-agent payments require manual coordination, no delivery guarantees, and no way to verify who you're transacting with.
+AI agents need to transact with each other — pay for services, hire other agents, get paid for work — but there's no trustless infrastructure with delivery guarantees. Today, agent-to-agent payments require manual coordination, no proof of work, and no way to verify who you're transacting with.
 
 ## The Solution
 
-MARC is a three-layer protocol that gives AI agents everything they need to transact trustlessly:
+MARC is a four-layer protocol that gives AI agents everything they need to transact trustlessly:
 
-| Layer | What it does | Standard |
-|---|---|---|
-| **Agent Identity** | On-chain registry. Register, link metadata, build verifiable reputation. | ERC-8004 |
-| **Agentic Commerce** | Escrow-based job marketplace. Lock funds → deliver → get paid. 1% fee. | ERC-8183 |
-| **x402 Micropayments** | HTTP 402 pay-per-call APIs via Stellar payment rails. | x402 + MPP |
+| Layer | What it does |
+|---|---|
+| **Agent Identity** | On-chain registry. Register, link metadata, build verifiable reputation. |
+| **Agentic Commerce** | Escrow-based job marketplace. Lock funds → deliver → get paid. 1% fee. |
+| **Validator Consensus** | Staked AI agents evaluate deliverables and vote. 2/3 majority auto-releases payment. |
+| **x402 Micropayments** | HTTP 402 pay-per-call APIs via EVM payment rails. |
 
 ## What We Built
 
-- 2 Soroban smart contracts (Rust → WASM, deployed on testnet)
-- 19 contract unit tests (7 identity + 12 commerce)
-- TypeScript SDK wrapping both contracts + x402 middleware
-- Interactive dashboard (register agents, create jobs, full escrow lifecycle)
-- Multi-agent TUI simulation (4 sellers + 5 buyers running concurrently)
-- Real AI agent marketplace — 4 Groq-powered seller agents doing real work, paid in USDC
+- 4 Solidity smart contracts deployed on Kite Testnet
+- TypeScript SDK wrapping all contracts + x402 middleware
+- 6 Groq-powered seller agents doing real work, paid in USDC
+- 3 validator agents that independently evaluate deliverables and vote on-chain
+- Interactive dashboard + buyer TUI
+- CLI (`marc`) for non-developer buyers
 
 ---
 
 ## How It Works
 
 ```
-  Buyer                     Contract                   Seller (AI Agent)
+  Buyer                  ValidatorConsensus            Seller (AI Agent)
     │                          │                          │
-    │  1. create_job(budget)   │                          │
+    │  1. createJob(budget)    │                          │
     │ ────────────────────────>│  USDC locked in escrow   │
     │                          │                          │
     │  2. POST /job to seller  │                          │
-    │ ────────────────────────────────────────────────────>│
-    │                          │                          │ (Groq LLM does work)
+    │ ─────────────────────────────────────────────────── >│
+    │                          │                          │ (Groq does work)
     │                          │  3. submit(deliverable)  │
-    │                          │<─────────────────────────│
+    │                          │< ─────────────────────── │
+    │                          │  auto: requestValidation │
     │                          │                          │
-    │  4. complete()           │                          │
-    │ ────────────────────────>│  99% → Seller            │
+    │               4. Validators evaluate + vote()       │
+    │                          │                          │
+    │               2/3 approve → complete()              │
+    │                          │  99% → Seller            │
     │                          │   1% → Treasury          │
 ```
 
-**Job States:** `Funded` → `Submitted` → `Completed` (or `Cancelled` from `Funded`)
+**Job States:** `Funded` → `Submitted` → `Completed` (or `Rejected` / `Cancelled`)
 
 ---
 
@@ -63,6 +67,7 @@ MARC is a three-layer protocol that gives AI agents everything they need to tran
 | Agent Identity | `0x3e0Ad2339f8e88Ff07AF2E515428527a8DF1E96A` |
 | Agentic Commerce | `0xeCee1A2115a5A2c6279Bf88870e658ed813374D0` |
 | Agent Passport | `0xAe325718BdD9F07C402B8544fBbB019FD8b0A36C` |
+| Validator Consensus | `0xDf962b69101B02bE082697Cd0262c9fdc7c57024` |
 | Network | Kite Testnet (Chain ID: 2368) |
 | Explorer | [testnet.kitescan.ai](https://testnet.kitescan.ai) |
 
@@ -73,30 +78,41 @@ MARC is a three-layer protocol that gives AI agents everything they need to tran
 ```
 bear-protocol/
 ├── contracts/
-│   ├── agent-identity/       # Soroban contract — agent registry
-│   └── agentic-commerce/     # Soroban contract — job escrow
-├── sdk/                      # TypeScript SDK
-│   └── src/
-│       ├── identity.ts       # IdentityClient
-│       ├── commerce.ts       # CommerceClient
-│       ├── marcPaywall.ts    # Express x402 middleware
-│       ├── marcFetch.ts      # Auto-paying fetch wrapper
-│       └── types.ts          # Shared types + TESTNET config
-├── agents/                   # AI agent marketplace
-│   ├── buyer/                # Buyer TUI — browse agents, hire, pay
-│   ├── seller-webbuilder/    # Builds HTML websites (Groq)
-│   ├── seller-copywriter/    # Writes website copy (Groq)
-│   ├── seller-namer/         # Generates brand names (Groq)
-│   ├── seller-researcher/    # Writes research reports (Groq)
-│   └── registry/             # Local agent manifest server
-├── demo/
-│   ├── tui.ts                # Multi-agent TUI simulation
-│   ├── buyer-agent.ts        # Buyer lifecycle script
-│   └── seller-agent.ts       # Seller x402 paywall server
-├── dashboard/                # Web dashboard (Express + SPA)
+│   ├── src/
+│   │   ├── AgentIdentity.sol       # Agent registry (ERC-721)
+│   │   ├── AgenticCommerce.sol     # Job escrow marketplace
+│   │   ├── AgentPassport.sol       # Spending sessions
+│   │   └── ValidatorConsensus.sol  # Staked validator voting
+│   └── scripts/
+│       ├── deploy.ts               # Deploy all contracts
+│       └── deploy-validator.ts     # Deploy ValidatorConsensus only
+├── sdk/src/
+│   ├── identity.ts                 # IdentityClient
+│   ├── commerce.ts                 # CommerceClient (auto-triggers validation on submit)
+│   ├── passport.ts                 # PassportClient
+│   ├── validatorConsensus.ts       # ValidatorConsensusClient
+│   ├── seller.ts                   # startSeller()
+│   ├── validator.ts                # startValidator()
+│   ├── marcPaywall.ts              # Express x402 middleware
+│   ├── marcFetch.ts                # Auto-paying fetch wrapper
+│   └── types.ts                    # Shared types + KITE_TESTNET config
+├── agents/
+│   ├── buyer/                      # Buyer TUI
+│   ├── seller-webbuilder/          # Builds HTML websites (Groq)
+│   ├── seller-copywriter/          # Writes copy (Groq)
+│   ├── seller-namer/               # Generates brand names (Groq)
+│   ├── seller-researcher/          # Writes research reports (Groq)
+│   ├── seller-designer/            # Creates design systems (Groq)
+│   ├── seller-coder/               # Writes code (Groq)
+│   └── validator/                  # Validator agent (Groq — evaluates deliverables)
+├── dashboard/                      # Web dashboard (Express + SPA)
+├── cli/
+│   └── marc.ts                     # CLI for buyers
+├── docs/
+│   ├── quickstart.md               # Buyer quickstart
+│   └── skills.md                   # Agent capability reference
 └── scripts/
-    ├── build.sh              # Build contracts + SDK
-    └── deploy-testnet.sh     # Deploy to Stellar testnet
+    └── generate-wallets.mjs        # Generate EVM keypairs
 ```
 
 ---
@@ -106,9 +122,7 @@ bear-protocol/
 ### Prerequisites
 
 - Node.js 20+
-- Rust 1.92+ (for contract builds only)
 - A Groq API key (free at [console.groq.com](https://console.groq.com))
-- A funded Stellar testnet keypair
 
 ### 1. Clone & build SDK
 
@@ -118,194 +132,123 @@ cd marc-stellar
 cd sdk && npm install && npm run build && cd ..
 ```
 
-### 2. Set up environment
+### 2. Generate wallets
 
 ```bash
-cp demo/.env.example demo/.env
+node scripts/generate-wallets.mjs >> .env
 ```
 
-Fill in `demo/.env`:
-```
-BUYER_SECRET=S...          # funded testnet keypair
-SELLER_SECRET_1=S...       # seller-webbuilder keypair
-SELLER_SECRET_2=S...       # seller-copywriter keypair
-SELLER_SECRET_3=S...       # seller-namer keypair
-SELLER_SECRET_4=S...       # seller-researcher keypair
-GROQ_API_KEY=gsk_...       # from console.groq.com
-X402_FACILITATOR_API_KEY=  # from: curl https://channels.openzeppelin.com/testnet/gen
-```
+Fill in `GROQ_API_KEY` and fund each address:
+- **ETH (gas)** → [faucet.gokite.ai](https://faucet.gokite.ai)
+- **USDC** → [faucet.circle.com](https://faucet.circle.com) → Kite Testnet
 
-Generate funded testnet keypairs:
+### 3. Stake validators
+
 ```bash
-stellar keys generate buyer --network testnet --fund
-stellar keys show buyer  # copy the S... secret
+VALIDATOR_PRIVATE_KEY=$VALIDATOR_SECRET_1 npx tsx cli/marc.ts validator stake 1
+VALIDATOR_PRIVATE_KEY=$VALIDATOR_SECRET_2 npx tsx cli/marc.ts validator stake 1
+VALIDATOR_PRIVATE_KEY=$VALIDATOR_SECRET_3 npx tsx cli/marc.ts validator stake 1
 ```
 
-Fund buyer with USDC at [faucet.circle.com](https://faucet.circle.com) → Stellar Testnet.
-
-### 3. Start the agent marketplace
+### 4. Start all agents
 
 ```bash
 ./start-agents.sh
 ```
 
-This starts:
-- Agent registry on `:4500`
-- 4 seller agents on `:4501–4504`
+Starts 6 seller agents (`:4501–4506`) + 3 validator agents (`:4600–4602`).
 
-### 4. Run the buyer TUI
+### 5. Hire an agent
 
 ```bash
-cd agents/buyer && npm start
+npx tsx cli/marc.ts setup
+npx tsx cli/marc.ts hire http://localhost:4501 "Build a landing page for Brew & Co"
 ```
 
-- `↑↓` to browse agents
-- `Tab` to focus task input
-- Type your task, press `Enter` to hire
-- Press `n` to start a new task
-
-### 5. Run the dashboard
-
-```bash
-cd dashboard && npm install && npx tsx server.ts
-```
-
-Open [http://localhost:3000/app](http://localhost:3000/app) to see all on-chain agents and jobs.
-
-### 6. Run the TUI simulation (optional)
-
-```bash
-cd demo && npm run tui
-```
-
-Runs 4 sellers + 5 buyers concurrently, showing live balances and activity.
+Payment releases automatically once validators reach consensus — no manual approval needed.
 
 ---
 
 ## SDK Usage
 
 ```typescript
-import { IdentityClient, CommerceClient, TESTNET } from "marc-stellar-sdk";
+import { CommerceClient, IdentityClient, KITE_TESTNET } from "marc-sdk";
+import { ethers } from "ethers";
 
+const signer = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
 const cfg = {
-  ...TESTNET,
-  onTx: (hash) => console.log(`tx: https://stellar.expert/explorer/testnet/tx/${hash}`),
+  ...KITE_TESTNET,
+  signerOrProvider: signer,
+  validatorConsensusContract: "0xDf962b69101B02bE082697Cd0262c9fdc7c57024",
 };
 
-// Register an agent on-chain
-const identity = new IdentityClient(cfg);
-const agentId = await identity.register(keypair, "ipfs://agent-metadata.json");
-
-// Browse registered agents
-const agents = await identity.listAgents();
-
-// Create an escrow job (locks USDC)
+// Create an escrow job — validators auto-assigned as evaluator
 const commerce = new CommerceClient(cfg);
 const jobId = await commerce.createJob(
-  clientKeypair,
-  providerAddress,
-  evaluatorAddress,
-  TESTNET.usdcToken,
-  10_000_000n, // 1 USDC (7 decimals)
-  "Build a landing page for Brew & Co coffee shop"
+  sellerWallet,
+  cfg.validatorConsensusContract,  // evaluator = consensus contract
+  KITE_TESTNET.usdcToken,
+  1_000_000n,                      // 1 USDC (6 decimals)
+  "Build a landing page for Brew & Co"
 );
 
-// Provider submits deliverable
-await commerce.submit(providerKeypair, jobId, "ipfs://deliverable-hash");
+// Seller submits deliverable → validation round opens automatically
+await commerce.submit(jobId, "ipfs://deliverable-hash");
 
-// Evaluator approves → 99% to provider, 1% to treasury
-await commerce.complete(evaluatorKeypair, jobId);
+// Validators vote → payment releases on 2/3 consensus (no action needed)
 ```
 
-### x402 Paywall (seller side)
+### Become a validator
 
 ```typescript
-import { marcPaywall } from "marc-stellar-sdk";
+import { ValidatorConsensusClient } from "marc-sdk";
 
-app.use("/api/work", marcPaywall({
-  payTo: seller.publicKey(),
-  price: "$0.01",
-  network: "stellar:testnet",
-  facilitatorApiKey: process.env.X402_FACILITATOR_API_KEY,
-}));
+const consensus = new ValidatorConsensusClient(cfg);
+await consensus.stake(1_000_000n); // stake 1 USDC to join validator pool
 ```
 
-### x402 Auto-pay (buyer side)
-
-```typescript
-import { marcFetch } from "marc-stellar-sdk";
-
-const paidFetch = marcFetch({ signer: keypair, rpcUrl: TESTNET.rpcUrl });
-const res = await paidFetch("http://seller-agent/api/work");
+Or via CLI:
+```bash
+npx tsx cli/marc.ts validator stake 1
+npx tsx cli/marc.ts validator status
 ```
-
----
-
-## Contract API Reference
-
-### Agent Identity
-
-| Function | Auth | Description |
-|---|---|---|
-| `register(agent, uri)` | agent | Register agent, returns sequential ID |
-| `get_agent(id)` | — | Get agent by ID |
-| `agent_of(address)` | — | Lookup agent ID by Stellar address |
-| `update_uri(id, uri)` | owner | Update metadata URI |
-| `deregister(id)` | owner | Remove agent from registry |
-
-### Agentic Commerce
-
-| Function | Auth | Description |
-|---|---|---|
-| `init(admin, treasury)` | admin | One-time setup (1% fee, sequential IDs) |
-| `create_job(client, provider, evaluator, token, budget, desc)` | client | Lock USDC in escrow |
-| `submit(job_id, deliverable)` | provider | Submit work result URI |
-| `complete(job_id)` | evaluator | Release 99% to provider, 1% to treasury |
-| `cancel(job_id)` | client | Refund full budget (only from Funded) |
-| `fee_bps()` | — | Current fee in basis points |
-| `set_fee_bps(bps)` | admin | Update fee (max 5%) |
-| `set_treasury(addr)` | admin | Update treasury address |
 
 ---
 
 ## Agent Marketplace
 
-The `agents/` directory contains a working AI agent marketplace built on MARC:
+| Agent | Port | Capability |
+|---|---|---|
+| `seller-webbuilder` | 4501 | Builds HTML/CSS websites |
+| `seller-copywriter` | 4502 | Writes marketing copy |
+| `seller-namer` | 4503 | Generates brand names |
+| `seller-researcher` | 4504 | Writes research reports |
+| `seller-designer` | 4505 | Creates design systems |
+| `seller-coder` | 4506 | Writes production code |
+| `validator` | 4600–4602 | Evaluates deliverables + votes on-chain |
 
-| Agent | Port | Capability | Model |
-|---|---|---|---|
-| `seller-webbuilder` | 4501 | Builds HTML websites | Groq Llama 3.3 70B |
-| `seller-copywriter` | 4502 | Writes website copy | Groq Llama 3.3 70B |
-| `seller-namer` | 4503 | Generates brand names | Groq Llama 3.3 70B |
-| `seller-researcher` | 4504 | Writes research reports | Groq Llama 3.3 70B |
-
-Each seller exposes:
-- `GET /` — returns `agent.json` capability manifest
-- `POST /job` — accepts `{ jobId, task }`, calls Groq, submits deliverable on-chain
-
-The buyer TUI (`agents/buyer`) discovers sellers via the local registry, creates MARC escrow jobs, notifies the seller, and releases payment on delivery.
+See [docs/skills.md](./docs/skills.md) for full capability details and example tasks.
 
 ---
 
-## Testing
+## Validator Consensus
 
-```bash
-# Soroban contract tests (19 total)
-cargo test
+Validators are staked agents that evaluate whether a seller's deliverable actually satisfies the job description. Each validator independently calls an LLM (Groq) and votes `APPROVE` or `REJECT` on-chain. Once 2 of 3 validators agree, the `ValidatorConsensus` contract automatically calls `complete()` or `reject()` on the commerce contract.
 
-# SDK type check
-cd sdk && npx tsc --noEmit
+**Validator rewards** are split from the reward pool among the majority voters. Deposit rewards via:
+```typescript
+await consensus.depositRewards(amount);
 ```
 
 ---
 
 ## Tech Stack
 
-- **Smart Contracts:** Rust + Soroban SDK 25.3.1 → WASM
-- **TypeScript SDK:** @stellar/stellar-sdk 14.6.1 + @x402/express
-- **AI Agents:** Groq SDK (Llama 3.3 70B)
+- **Smart Contracts:** Solidity 0.8.24 + OpenZeppelin Upgradeable → Kite EVM
+- **TypeScript SDK:** ethers v6
+- **AI Agents:** Groq Llama 3.3 70B
 - **Dashboard:** Express + vanilla JS SPA
-- **Standards:** ERC-8004 (Agent Identity), ERC-8183 (Agentic Commerce), x402, MPP
+- **CLI:** tsx
 
 ---
 

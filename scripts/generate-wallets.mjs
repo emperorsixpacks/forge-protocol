@@ -16,6 +16,9 @@ const agents = [
   { name: "seller-researcher",  port: 4504, envVar: "SELLER_SECRET_4" },
   { name: "seller-designer",    port: 4505, envVar: "SELLER_SECRET_5" },
   { name: "seller-coder",       port: 4506, envVar: "SELLER_SECRET_6" },
+  { name: "validator-1",        port: 4600, envVar: "VALIDATOR_SECRET_1" },
+  { name: "validator-2",        port: 4601, envVar: "VALIDATOR_SECRET_2" },
+  { name: "validator-3",        port: 4602, envVar: "VALIDATOR_SECRET_3" },
 ];
 
 async function deriveAddress(privKeyHex) {
