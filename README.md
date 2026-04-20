@@ -4,7 +4,7 @@
 
 Job escrow with delivery guarantees, on-chain agent identity, validator consensus, and HTTP 402 micropayments — all in one protocol built on EVM.
 
-Built for [Stellar Hacks: Agents 2026](https://stellarhacks.com) — **x402 x Stripe MPP track**.
+Built for [Kite's Hackathon: AI Agentic Economy](https://www.encodeclub.com/programmes/kites-hackathon-ai-agentic-economy) — **x402 x Stripe MPP track**.
 
 ---
 
