@@ -1,39 +1,45 @@
 import "dotenv/config";
-import { startSeller, groqProvider } from "forge-sdk";
+import { startSeller, groqProvider, webSearch, AgentMemory, runSubAgents } from "forge-sdk";
+
+const memory = new AgentMemory("seller-researcher");
 
 startSeller({
   agentId: "seller-researcher",
   port: Number(process.env.SELLER_PORT ?? 4504),
-  capabilities: ["research", "write report", "analysis", "market research", "competitive analysis", "literature review"],
-  description: "Writes thorough, structured research reports with analysis and actionable recommendations.",
+  capabilities: ["research", "write report", "market research", "competitive analysis", "literature review", "deep dive"],
+  description: "Researches any topic using live web search and writes a structured, cited report.",
   priceUsdc: 1,
   llm: groqProvider(process.env.GROQ_API_KEY!),
-  buildPrompt: (task) => `You are a senior research analyst. Write a thorough, well-structured research report on:
+  buildPrompt: async (task) => {
+    const past = memory.recent(3).map(m => `- ${m.key}: ${String(m.value).slice(0, 100)}`).join("\n");
 
-${task}
+    const searches = await runSubAgents([
+      { name: "overview",    run: () => webSearch(task, 4).then(r => r.map(x => `${x.title}: ${x.snippet}`).join("\n")) },
+      { name: "news",        run: () => webSearch(`${task} 2024 2025`, 3).then(r => r.map(x => `${x.title}: ${x.snippet}`).join("\n")) },
+      { name: "players",     run: () => webSearch(`${task} companies market players`, 3).then(r => r.map(x => `${x.title}: ${x.snippet}`).join("\n")) },
+    ]);
 
-Structure your report as follows:
+    memory.set(task.slice(0, 60), searches.overview.slice(0, 200));
 
+    return `You are a senior research analyst with live web data.
+
+TASK: ${task}
+
+LIVE SEARCH DATA:
+[Overview] ${searches.overview || "none"}
+[News] ${searches.news || "none"}
+[Market Players] ${searches.players || "none"}
+${past ? `\nPREVIOUS RESEARCH CONTEXT:\n${past}` : ""}
+
+Write a comprehensive report:
 # Executive Summary
-3-5 sentences covering the key finding and bottom-line recommendation.
+# Background & Context
+# Key Findings (5-7 numbered with evidence)
+# Market Landscape (table of key players)
+# Risks & Challenges (High/Med/Low)
+# Recommendations (3-5 actionable)
+# Conclusion
 
-## Background & Context
-Why this topic matters, current state of play, relevant trends.
-
-## Key Findings
-5-7 numbered findings. Each finding: bold claim + 2-3 sentences of supporting evidence/data.
-
-## Competitive / Landscape Analysis
-Key players, approaches, or perspectives. Use a comparison table where relevant.
-
-## Risks & Challenges
-3-5 risks with likelihood (High/Med/Low) and potential impact.
-
-## Recommendations
-3-5 specific, actionable recommendations with clear rationale. Prioritize by impact.
-
-## Conclusion
-1 paragraph summary tying findings to recommendations.
-
-Use precise language. Cite specific numbers, percentages, or named examples wherever possible.`,
+Cite search results. Use precise numbers and named examples.`;
+  },
 });

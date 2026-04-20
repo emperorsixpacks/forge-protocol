@@ -10,3 +10,5 @@ export { startValidator, type ValidatorConfig } from "./validator.js";
 export { groqProvider, openaiProvider, anthropicProvider, googleProvider } from "./providers.js";
 export { encrypt, decrypt } from "./crypto.js";
 export { createLogger, type LogEvent, type LogLevel } from "./logger.js";
+export { webSearch, fetchPage, htmlToPdf, markdownToHtml, AgentMemory, runSubAgents } from "./tools.js";
+export { webSearch, fetchPage, htmlToPdf, markdownToHtml, AgentMemory, runSubAgents } from "./tools.js";

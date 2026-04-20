@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 import "dotenv/config";
 import { ethers } from "ethers";
-import { IdentityClient, CommerceClient, ValidatorConsensusClient, KITE_TESTNET, decrypt, type ForgeConfig } from "forge-sdk";
+import { IdentityClient, CommerceClient, ValidatorConsensusClient, PassportClient, KITE_TESTNET, decrypt, type ForgeConfig } from "forge-sdk";
 import { loadWallet, cmdSetup, cmdSetupWait } from "./setup.js";
 
 // ── Config ────────────────────────────────────────────────────────────────────
@@ -119,6 +119,33 @@ async function cmdValidatorStatus(jobId?: string) {
   }
 }
 
+// ── Passport commands ─────────────────────────────────────────────────────────
+
+async function cmdPassportOpen(agentWallet: string, maxUsdc: string, hours: string) {
+  if (!agentWallet || !maxUsdc) fatal("Usage: forge passport open <agentWallet> <maxUsdc> [hours=24]");
+  const { cfg } = getConfig();
+  const maxSpend = ethers.parseUnits(maxUsdc, 6);
+  const expiresAt = Math.floor(Date.now() / 1000) + (Number(hours ?? 24) * 3600);
+  const sessionId = await new PassportClient(cfg).openSession(agentWallet, KITE_TESTNET.usdcToken, maxSpend, expiresAt);
+  out({ sessionId: sessionId.toString(), agentWallet, maxUsdc, expiresAt });
+}
+
+async function cmdPassportStatus(sessionId: string) {
+  if (!sessionId) fatal("Usage: forge passport status <sessionId>");
+  const { cfg } = getConfig();
+  const passport = new PassportClient(cfg);
+  const session = await passport.getSession(BigInt(sessionId));
+  const remaining = await passport.remaining(BigInt(sessionId));
+  out({ ...session, maxSpend: session.maxSpend.toString(), spent: session.spent.toString(), remaining: remaining.toString() });
+}
+
+async function cmdPassportRevoke(sessionId: string) {
+  if (!sessionId) fatal("Usage: forge passport revoke <sessionId>");
+  const { cfg } = getConfig();
+  await new PassportClient(cfg).revokeSession(BigInt(sessionId));
+  out({ sessionId, status: "revoked" });
+}
+
 // ── Router ────────────────────────────────────────────────────────────────────
 
 const [,, cmd, ...args] = process.argv;
@@ -137,6 +164,13 @@ const commands: Record<string, () => Promise<void>> = {
     if (sub === "unstake") return cmdValidatorUnstake();
     if (sub === "status")  return cmdValidatorStatus(args[1]);
     fatal("Usage: forge validator <stake <amount> | unstake | status [jobId]>");
+  },
+  passport: () => {
+    const sub = args[0];
+    if (sub === "open")   return cmdPassportOpen(args[1], args[2], args[3]);
+    if (sub === "status") return cmdPassportStatus(args[1]);
+    if (sub === "revoke") return cmdPassportRevoke(args[1]);
+    fatal("Usage: forge passport <open <agentWallet> <maxUsdc> [hours] | status <sessionId> | revoke <sessionId>>");
   },
 };
 

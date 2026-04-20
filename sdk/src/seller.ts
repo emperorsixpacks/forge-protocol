@@ -14,7 +14,7 @@ export interface SellerConfig {
   description: string;
   priceUsdc: number;
   llm: LLMProvider;
-  buildPrompt: (task: string) => string;
+  buildPrompt: (task: string) => string | Promise<string>;
 }
 
 async function fireWebhook(url: string, body: unknown, log: ReturnType<typeof createLogger>) {
