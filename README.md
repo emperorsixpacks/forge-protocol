@@ -252,10 +252,6 @@ await consensus.depositRewards(amount);
 
 ---
 
-## Team
-
-Built by [@mmhhmm](https://github.com/mmhhmm)
-
 ## License
 
 MIT
