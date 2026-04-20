@@ -1,4 +1,4 @@
-# MARC Stellar — Design System
+# Forge Protocol — Design System
 
 Extracted from `marcprotocol.com` (live Ethereum-version site, provided as visual reference). We reuse the visual identity 1:1 and pivot only the copy (privacy layer → commerce layer).
 
@@ -124,19 +124,19 @@ Implement only if we have time on Day 2. Toggle lives in nav. Persisted to local
 - **Hosting:** GitHub Pages or Vercel, static deploy
 - **Build tool:** none — just `index.html` + `style.css` + `app.js`
 
-## Copy pivots (original site → Stellar version)
+## Copy pivots (original site → Kite version)
 
-| Original copy | Stellar version |
+| Original copy | Kite version |
 |---|---|
 | "The Privacy Layer for Agent Payments." | **"The Commerce Layer for Agent Payments."** |
-| "The confidential payment layer for AI agents. FHE-encrypted tokens, on-chain identity, and escrow-based commerce. All in one protocol." | "The commerce layer for AI agent payments on Stellar. Job escrow with delivery guarantees, on-chain agent identity, on top of x402 and MPP. All in one protocol." |
+| "The confidential payment layer for AI agents. FHE-encrypted tokens, on-chain identity, and escrow-based commerce. All in one protocol." | "The commerce layer for AI agent payments on Kite. Job escrow with delivery guarantees, on-chain agent identity, on top of x402 and MPP. All in one protocol." |
 | "Wrap USDC into FHE-encrypted cUSDC. Fee-free peer-to-peer transfers. Silent failure pattern leaks zero balance info." | "Escrow USDC for multi-step agent jobs. 1% platform fee on completion. ERC-8183-inspired job lifecycle." |
-| "Three ERC standards working together to bring private payments to every agent protocol: x402, MCP, MPP, A2A, AgentKit, Virtuals GAME, and OpenClaw." | "Two Soroban contracts working with x402 and MPP to bring trust and delivery guarantees to every AI agent transaction on Stellar." |
-| Protocol stack: ERC-7984 (Confidential Token) | Protocol stack: **Agentic Commerce** (Soroban — job escrow) |
-| ERC-8004 (Identity / Reputation) | **Agent Identity** (Soroban — ERC-8004-inspired) |
-| ERC-8183 (Agentic Commerce) | **x402 / MPP integration** (Stellar payment rails) |
+| "Three ERC standards working together to bring private payments to every agent protocol: x402, MCP, MPP, A2A, AgentKit, Virtuals GAME, and OpenClaw." | "Two Solidity contracts working with x402 and MPP to bring trust and delivery guarantees to every AI agent transaction on Kite." |
+| Protocol stack: ERC-7984 (Confidential Token) | Protocol stack: **Agentic Commerce** (EVM — job escrow) |
+| ERC-8004 (Identity / Reputation) | **Agent Identity** (EVM — ERC-8004-inspired) |
+| ERC-8183 (Agentic Commerce) | **x402 / MPP integration** (Kite EVM payment rails) |
 | "From USDC to Confidential Commerce" | "From Payment to Commerce" |
-| "Chain: Ethereum Sepolia" | "Chain: Stellar Testnet" |
-| Wallet: MetaMask / WalletConnect | Wallet: Freighter (via Stellar Wallets Kit) |
+| "Chain: Ethereum Sepolia" | "Chain: Kite Testnet" |
+| Wallet: MetaMask / WalletConnect | Wallet: MetaMask / any EVM wallet |
 
 All orange accents and visual elements stay identical.

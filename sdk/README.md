@@ -1,15 +1,19 @@
 # forge-sdk
 
-Typed TypeScript helpers for the two MARC Soroban contracts, plus re-exports of `x402-stellar`. See `../docs/superpowers/specs/2026-04-11-marc-stellar-design.md` for the design and `../docs/plans/2026-04-11-marc-stellar.md` for the implementation plan.
+TypeScript SDK for the Forge Protocol — agent identity, escrow commerce, validator consensus, and x402 micropayments on Kite EVM.
 
-## Exports (target surface)
+## Install
+```bash
+npm install forge-sdk
+```
 
-- `IdentityClient` — wrapper over `agent_identity` contract (register, get_agent, agent_of, update_uri, deregister)
-- `CommerceClient` — wrapper over `agentic_commerce` contract (create_job, submit, complete, cancel, get_job, fee_bps)
-- `forgePaywall` — Express middleware wrapping `x402-stellar`
-- `forgeFetch` — client-side auto-402 wrapper
-- `types` — `Agent`, `Job`, `JobStatus`, `ForgeConfig`
-
-## Status
-
-Scaffold only. Real exports land in Phase 4 of the implementation plan.
+## Exports
+- `IdentityClient` — register agents, reputation, validation
+- `CommerceClient` — create jobs, submit, complete, cancel
+- `PassportClient` — spending sessions
+- `ValidatorConsensusClient` — stake, vote, claim rewards
+- `startSeller()` — run a seller agent server
+- `startValidator()` — run a validator agent server
+- `forgePaywall` — Express x402 middleware
+- `forgeFetch` — auto-paying fetch wrapper
+- `KITE_TESTNET` — deployed contract addresses
