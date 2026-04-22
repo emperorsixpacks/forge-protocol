@@ -5,7 +5,8 @@ import { CommerceClient } from "./commerce.js";
 import { KITE_TESTNET } from "./types.js";
 import { encrypt } from "./crypto.js";
 import { createLogger } from "./logger.js";
-import type { LLMProvider, ForgeConfig } from "./types.js";
+import { openTunnel } from "./tunnel.js";
+import type { ForgeConfig } from "./types.js";
 
 export interface SellerConfig {
   agentId: string;
@@ -13,8 +14,8 @@ export interface SellerConfig {
   capabilities: string[];
   description: string;
   priceUsdc: number;
-  llm: LLMProvider;
-  buildPrompt: (task: string) => string | Promise<string>;
+  /** Your agent logic — receive the task, return the deliverable. Use any AI framework you like. */
+  execute: (task: string, jobId?: string) => Promise<string>;
 }
 
 async function fireWebhook(url: string, body: unknown, log: ReturnType<typeof createLogger>) {
@@ -50,7 +51,7 @@ export async function startSeller(sellerCfg: SellerConfig) {
     log.info("agent_already_registered");
   }
 
-  const manifest = {
+  const manifest: Record<string, any> = {
     name: sellerCfg.agentId,
     description: sellerCfg.description,
     endpoint: `http://localhost:${sellerCfg.port}/execute`,
@@ -60,6 +61,26 @@ export async function startSeller(sellerCfg: SellerConfig) {
     input_schema: { task: "string", buyer_pubkey: "string (optional)", callback_url: "string (optional)" },
     output_schema: { result: "string (ECIES base64 if buyer_pubkey provided, else plaintext)" },
   };
+
+  // auto-open tunnel if ENABLE_TUNNEL=true
+  if (process.env.ENABLE_TUNNEL === "true") {
+    openTunnel(sellerCfg.port)
+      .then(async (url) => {
+        manifest.endpoint = `${url}/execute`;
+        manifest.tunnel_url = url;
+        log.info("tunnel_open", { url });
+        // store public URL in on-chain identity metadata
+        try {
+          await identity.setAgentURI(1n, `ipfs://${sellerCfg.agentId}.json`);
+          const encoded = new TextEncoder().encode(url);
+          // store as metadata key "endpoint"
+          const tx = await (identity as any).contract.setMetadata(1n, "endpoint", encoded);
+          await tx.wait();
+          log.info("endpoint_registered_onchain", { url });
+        } catch { /* non-fatal */ }
+      })
+      .catch((err) => log.warn("tunnel_failed", { error: err.message }));
+  }
 
   const app = express();
   app.use(express.json());
@@ -76,7 +97,7 @@ export async function startSeller(sellerCfg: SellerConfig) {
     res.json({ status: "accepted" });
 
     try {
-      const plaintext = await sellerCfg.llm.complete(sellerCfg.buildPrompt(task));
+      const plaintext = await sellerCfg.execute(task, task_id);
       const output = buyerPubKey ? encrypt(buyerPubKey, plaintext) : plaintext;
       log.info("job_completed", { task_id, encrypted: !!buyerPubKey });
 
@@ -98,7 +119,7 @@ export async function startSeller(sellerCfg: SellerConfig) {
     res.json({ status: "accepted", jobId });
 
     try {
-      const plaintext = await sellerCfg.llm.complete(sellerCfg.buildPrompt(task));
+      const plaintext = await sellerCfg.execute(task, jobId);
       const deliverable = buyer_pubkey ? encrypt(buyer_pubkey, plaintext) : plaintext;
 
       const commerce = new CommerceClient(cfg);

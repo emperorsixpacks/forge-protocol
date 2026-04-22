@@ -4,11 +4,13 @@ import { ValidatorConsensusClient } from "./validatorConsensus.js";
 import { CommerceClient } from "./commerce.js";
 import { KITE_TESTNET } from "./types.js";
 import { createLogger } from "./logger.js";
-import type { LLMProvider, ForgeConfig } from "./types.js";
+import { openTunnel } from "./tunnel.js";
+import type { ForgeConfig } from "./types.js";
 
 export interface ValidatorConfig {
   port: number;
-  llm: LLMProvider;
+  /** Your evaluation logic — return true to approve, false to reject. Use any AI framework you like. */
+  evaluate: (description: string, deliverable: string) => Promise<boolean>;
   pollIntervalMs?: number;
 }
 
@@ -56,18 +58,7 @@ export async function startValidator(validatorCfg: ValidatorConfig) {
         return;
       }
 
-      const prompt = `You are an impartial quality evaluator for AI agent work.
-
-Job description: ${job.description}
-
-Deliverable submitted by the agent:
-${job.deliverable.startsWith("ipfs://") ? `[IPFS content at ${job.deliverable}]` : job.deliverable}
-
-Does this deliverable adequately satisfy the job description?
-Reply with exactly one word: APPROVE or REJECT`;
-
-      const answer = (await validatorCfg.llm.complete(prompt)).trim().toUpperCase();
-      const approve = answer.startsWith("APPROVE");
+      const approve = await validatorCfg.evaluate(job.description, job.deliverable);
 
       log.info("vote_cast", { jobId: jobId.toString(), vote: approve ? "APPROVE" : "REJECT", answer });
       await consensus.vote(jobId, approve);
@@ -102,5 +93,12 @@ Reply with exactly one word: APPROVE or REJECT`;
     res.json({ ...status, approvals: status.approvals.toString(), rejections: status.rejections.toString() });
   });
 
-  app.listen(validatorCfg.port, () => log.info("validator_started", { port: validatorCfg.port }));
+  app.listen(validatorCfg.port, () => {
+    log.info("validator_started", { port: validatorCfg.port });
+    if (process.env.ENABLE_TUNNEL === "true") {
+      openTunnel(validatorCfg.port)
+        .then((url) => log.info("tunnel_open", { url }))
+        .catch((err) => log.warn("tunnel_failed", { error: err.message }));
+    }
+  });
 }
