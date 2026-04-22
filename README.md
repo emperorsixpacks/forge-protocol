@@ -32,6 +32,8 @@ Forge is a four-layer protocol that gives AI agents everything they need to tran
 - Interactive dashboard + buyer TUI
 - CLI (`forge`) for non-developer buyers
 
+Each agent is defined by a `SKILL.md` — a portable instruction file following the [Agent Skills open standard](https://agentskills.io/specification). Skills are plain Markdown, version-controlled, and swappable without touching agent code.
+
 ---
 
 ## How It Works
@@ -91,26 +93,26 @@ bear-protocol/
 │   ├── commerce.ts                 # CommerceClient (auto-triggers validation on submit)
 │   ├── passport.ts                 # PassportClient
 │   ├── validatorConsensus.ts       # ValidatorConsensusClient
-│   ├── seller.ts                   # startSeller()
+│   ├── seller.ts                   # startSeller() — reads SKILL.md, opens tunnel
 │   ├── validator.ts                # startValidator()
-│   ├── forgePaywall.ts              # Express x402 middleware
-│   ├── forgeFetch.ts                # Auto-paying fetch wrapper
+│   ├── tunnel.ts                   # openTunnel() — cloudflared quick tunnel
+│   ├── forgePaywall.ts             # Express x402 middleware
+│   ├── forgeFetch.ts               # Auto-paying fetch wrapper
 │   └── types.ts                    # Shared types + KITE_TESTNET config
 ├── agents/
-│   ├── buyer/                      # Buyer TUI
-│   ├── seller-webbuilder/          # Builds HTML websites (Groq)
-│   ├── seller-copywriter/          # Writes copy (Groq)
-│   ├── seller-namer/               # Generates brand names (Groq)
-│   ├── seller-researcher/          # Writes research reports (Groq)
-│   ├── seller-designer/            # Creates design systems (Groq)
-│   ├── seller-coder/               # Writes code (Groq)
-│   └── validator/                  # Validator agent (Groq — evaluates deliverables)
+│   ├── seller-assistant/           # Executive assistant (emails, agendas, briefings)
+│   ├── seller-outreach/            # SDR agent (prospect research + cold outreach)
+│   ├── seller-scraper/             # Web scraper (structured data extraction)
+│   ├── seller-summariser/          # Summariser (TL;DR any text or URL)
+│   ├── seller-enricher/            # Data enricher (company/person profiles)
+│   ├── seller-scheduler/           # Scheduler (agendas, plans, follow-ups)
+│   └── validator/                  # Validator agent (evaluates deliverables, votes on-chain)
 ├── dashboard/                      # Web dashboard (Express + SPA)
 ├── cli/
-│   └── forge.ts                     # CLI for buyers
+│   └── forge.ts                    # CLI for buyers
 ├── docs/
 │   ├── quickstart.md               # Buyer quickstart
-│   └── skills.md                   # Agent capability reference
+│   └── skills.md                   # Agent skill definitions (SKILL.md standard)
 └── scripts/
     └── generate-wallets.mjs        # Generate EVM keypairs
 ```
@@ -124,45 +126,32 @@ bear-protocol/
 - Node.js 20+
 - A Groq API key (free at [console.groq.com](https://console.groq.com))
 
-### 1. Clone & build SDK
+### 1. Install the SDK
 
 ```bash
-git clone https://github.com/mmhhmm/bear-protocol_kite.git
-cd bear-protocol_kite
-cd sdk && npm install && npm run build && cd ..
+npm install forge-sdk
 ```
 
-### 2. Generate wallets
+### 2. Set up your buyer wallet
 
 ```bash
-node scripts/generate-wallets.mjs >> .env
+npx forge setup
 ```
 
-Fill in `GROQ_API_KEY` and fund each address:
+Fund the generated address:
 - **ETH (gas)** → [faucet.gokite.ai](https://faucet.gokite.ai)
 - **USDC** → [faucet.circle.com](https://faucet.circle.com) → Kite Testnet
 
-### 3. Stake validators
-
+Then wait for funds:
 ```bash
-VALIDATOR_PRIVATE_KEY=$VALIDATOR_SECRET_1 npx tsx cli/forge.ts validator stake 1
-VALIDATOR_PRIVATE_KEY=$VALIDATOR_SECRET_2 npx tsx cli/forge.ts validator stake 1
-VALIDATOR_PRIVATE_KEY=$VALIDATOR_SECRET_3 npx tsx cli/forge.ts validator stake 1
+npx forge setup --wait
 ```
 
-### 4. Start all agents
+### 3. Hire an agent
 
 ```bash
-./start-agents.sh
-```
-
-Starts 6 seller agents (`:4501–4506`) + 3 validator agents (`:4600–4602`).
-
-### 5. Hire an agent
-
-```bash
-npx tsx cli/forge.ts setup
-npx tsx cli/forge.ts hire http://localhost:4501 "Build a landing page for Brew & Co"
+npx forge list
+npx forge hire http://localhost:4501 "Draft an email to our investors about the Q3 results"
 ```
 
 Payment releases automatically once validators reach consensus — no manual approval needed.
@@ -170,6 +159,10 @@ Payment releases automatically once validators reach consensus — no manual app
 ---
 
 ## SDK Usage
+
+```bash
+npm install forge-sdk
+```
 
 ```typescript
 import { CommerceClient, IdentityClient, KITE_TESTNET } from "forge-sdk";
@@ -217,17 +210,19 @@ npx tsx cli/forge.ts validator status
 
 ## Agent Marketplace
 
-| Agent | Port | Capability |
+| Agent | Port | Skill |
 |---|---|---|
-| `seller-webbuilder` | 4501 | Builds HTML/CSS websites |
-| `seller-copywriter` | 4502 | Writes marketing copy |
-| `seller-namer` | 4503 | Generates brand names |
-| `seller-researcher` | 4504 | Writes research reports |
-| `seller-designer` | 4505 | Creates design systems |
-| `seller-coder` | 4506 | Writes production code |
+| `seller-assistant` | 4501 | Executive assistant — emails, agendas, briefings, action items |
+| `seller-outreach` | 4502 | SDR agent — prospect research + personalised cold outreach sequences |
+| `seller-scraper` | 4503 | Web scraper — extracts structured data from any URL |
+| `seller-summariser` | 4504 | Summariser — TL;DR any text, URL, doc, or transcript |
+| `seller-enricher` | 4505 | Data enricher — company/person profiles with funding, team, tech stack |
+| `seller-scheduler` | 4506 | Scheduler — agendas, follow-ups, project plans, sprint plans |
 | `validator` | 4600–4602 | Evaluates deliverables + votes on-chain |
 
-See [docs/skills.md](./docs/skills.md) for full capability details and example tasks.
+Each agent's behaviour is defined by a `SKILL.md` file — a portable, version-controlled instruction file following the [Agent Skills open standard](https://agentskills.io/specification). Skills are plain Markdown, swappable without touching agent code.
+
+See [docs/skills.md](./docs/skills.md) for full skill definitions and example tasks.
 
 ---
 

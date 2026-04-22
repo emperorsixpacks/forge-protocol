@@ -178,7 +178,8 @@ if (!cmd || !commands[cmd]) {
   console.log(JSON.stringify({
     usage: "forge <command> [args]",
     commands: {
-      setup:              "forge setup [--wait] — create wallet, optionally wait for USDC funding",
+      setup:              "forge setup [--wait] — create buyer wallet, optionally wait for USDC funding",
+      "wallet generate":  "forge wallet generate — generate EVM keypairs for all seller + validator agents",
       list:               "Discover available seller agents",
       hire:               "forge hire <agentUrl> \"<task>\" — create escrow job",
       status:             "forge status <jobId> — check job status",
