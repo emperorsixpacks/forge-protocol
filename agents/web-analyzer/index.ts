@@ -41,9 +41,19 @@ startSeller({
   port: Number(process.env.ANALYZER_PORT ?? 4501),
   capabilities: ["analyze website", "understand webapp", "web overview", "json metadata extraction"],
   description: "Analyzes any URL and returns a step-by-step overview and JSON metadata.",
-  priceUsdc: 1,
+  priceUsdt: 1,
   execute: async (task) => {
-    const { text } = await agent.generate([{ role: "user", content: task }]);
-    return text;
+    const result = await agent.generate([{ role: "user", content: task }], {
+      onStepFinish: (step: any) => {
+        if (step.text) console.log(JSON.stringify({ event: "thought", text: step.text.slice(0, 200) }));
+        if (step.toolCalls?.length) step.toolCalls.forEach((t: any) =>
+          console.log(JSON.stringify({ event: "tool_call", tool: t.toolName, input: t.args }))
+        );
+        if (step.toolResults?.length) step.toolResults.forEach((t: any) =>
+          console.log(JSON.stringify({ event: "tool_result", tool: t.toolName, chars: JSON.stringify(t.result).length }))
+        );
+      },
+    });
+    return result.text;
   },
 });

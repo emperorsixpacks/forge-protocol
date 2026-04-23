@@ -39,9 +39,20 @@ startSeller({
   port: Number(process.env.SCRAPER_PORT ?? 4503),
   capabilities: ["scrape website", "extract data", "web data extraction"],
   description: "Scrapes any URL and returns clean structured data.",
-  priceUsdc: 1,
+  priceUsdt: 1,
   execute: async (task) => {
-    const { text } = await agent.generate([{ role: "user", content: task }]);
-    return text;
+    const steps: string[] = [];
+    const result = await agent.generate([{ role: "user", content: task }], {
+      onStepFinish: (step: any) => {
+        if (step.text) console.log(JSON.stringify({ event: "thought", text: step.text.slice(0, 200) }));
+        if (step.toolCalls?.length) step.toolCalls.forEach((t: any) =>
+          console.log(JSON.stringify({ event: "tool_call", tool: t.toolName, input: t.args }))
+        );
+        if (step.toolResults?.length) step.toolResults.forEach((t: any) =>
+          console.log(JSON.stringify({ event: "tool_result", tool: t.toolName, chars: JSON.stringify(t.result).length }))
+        );
+      },
+    });
+    return result.text;
   },
 });
