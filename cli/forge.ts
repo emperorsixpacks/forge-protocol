@@ -40,7 +40,7 @@ async function cmdHire(agentUrl: string, task: string) {
   try { await identity.register("ipfs://buyer.json"); } catch { /* already registered */ }
 
   const commerce = new CommerceClient(cfg);
-  const budget = BigInt(process.env.JOB_BUDGET_WEI ?? "1000000000000000000"); // 1 USDT (18 decimals)
+  const budget = BigInt(process.env.JOB_BUDGET_WEI ?? "10000000000000000"); // 0.01 USDT (18 decimals)
   const evaluator = cfg.validatorConsensusContract || signer.address;
   const jobId = await commerce.createJob(manifest.wallet, evaluator, KITE_TESTNET.usdtToken, budget, task);
 

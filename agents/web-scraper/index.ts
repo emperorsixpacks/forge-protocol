@@ -39,7 +39,7 @@ startSeller({
   port: Number(process.env.SCRAPER_PORT ?? 4503),
   capabilities: ["scrape website", "extract data", "web data extraction"],
   description: "Scrapes any URL and returns clean structured data.",
-  priceUsdt: 1,
+  priceUsdt: 0.01,
   execute: async (task) => {
     const steps: string[] = [];
     const result = await agent.generate([{ role: "user", content: task }], {

@@ -41,7 +41,7 @@ startSeller({
   port: Number(process.env.ANALYZER_PORT ?? 4501),
   capabilities: ["analyze website", "understand webapp", "web overview", "json metadata extraction"],
   description: "Analyzes any URL and returns a step-by-step overview and JSON metadata.",
-  priceUsdt: 1,
+  priceUsdt: 0.01,
   execute: async (task) => {
     const result = await agent.generate([{ role: "user", content: task }], {
       onStepFinish: (step: any) => {
