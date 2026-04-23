@@ -43,17 +43,21 @@ cd ..
 
 ## Step 2 — Set Up the Local CLI Alias
 
-Instead of `npx forge`, use:
+Add this alias to your shell so you can run `forge` from anywhere:
+
 ```bash
-alias forge="npx tsx /path/to/bear-protocol_kite/cli/forge.ts"
+alias forge="npx tsx /home/emperorsixpacks/GitHub/bear-protocol_kite/cli/forge.ts"
 ```
 
-Replace `/path/to/bear-protocol_kite` with the actual path on your machine:
+To persist it, add the line above to your `~/.bashrc` or `~/.zshrc`, then reload:
 ```bash
-alias forge="npx tsx $(pwd)/cli/forge.ts"
+source ~/.bashrc   # or source ~/.zshrc
 ```
 
-Add it to your `~/.bashrc` or `~/.zshrc` to persist across sessions.
+Verify it works:
+```bash
+forge
+```
 
 ---
 
