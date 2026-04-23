@@ -84,6 +84,16 @@ export async function startValidator(validatorCfg: ValidatorConfig) {
         return;
       }
 
+      // open round if not already open
+      const { open } = await consensus.roundStatus(jobId);
+      if (!open) {
+        try {
+          await consensus.requestValidation(jobId);
+        } catch (e) {
+          // may already be open or closed — continue
+        }
+      }
+
       const approve = await validatorCfg.evaluate(job.description, job.deliverable);
 
       log.info("vote_cast", { jobId: jobId.toString(), vote: approve ? "APPROVE" : "REJECT" });
