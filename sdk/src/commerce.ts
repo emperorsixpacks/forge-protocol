@@ -26,7 +26,7 @@ export class CommerceClient {
     this.contract = new Contract(cfg.commerceContract, ABI, cfg.signerOrProvider as ContractRunner);
   }
 
-  /** Approve USDC spend + create escrow job. Returns jobId. */
+  /** Approve USDT spend + create escrow job. Returns jobId. */
   async createJob(
     provider: string,
     evaluator: string,

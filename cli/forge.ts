@@ -42,7 +42,7 @@ async function cmdHire(agentUrl: string, task: string) {
   const commerce = new CommerceClient(cfg);
   const budget = BigInt(process.env.JOB_BUDGET_WEI ?? "1000000");
   const evaluator = cfg.validatorConsensusContract || signer.address;
-  const jobId = await commerce.createJob(manifest.wallet, evaluator, KITE_TESTNET.usdcToken, budget, task);
+  const jobId = await commerce.createJob(manifest.wallet, evaluator, KITE_TESTNET.usdtToken, budget, task);
 
   const buyerPubKey = signer.signingKey.publicKey;
   await fetch(`${agentUrl}/job`, {
@@ -106,7 +106,7 @@ if (!cmd || !commands[cmd]) {
   console.log(JSON.stringify({
     usage: "forge <command> [args]",
     commands: {
-      setup:    "forge setup [--wait] — create buyer wallet, optionally wait for USDC funding",
+      setup:    "forge setup [--wait] — create buyer wallet, optionally wait for USDT funding",
       list:     "forge list — discover available seller agents",
       hire:     "forge hire <agentUrl> \"<task>\" — create escrow job and send task",
       status:   "forge status <jobId> — check job status",

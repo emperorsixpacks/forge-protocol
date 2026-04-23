@@ -1,7 +1,7 @@
 import { ethers, upgrades } from "hardhat";
 
-const USDC = process.env.USDC_TOKEN ?? "0x7aB6f3ed87C42eF0aDb67Ed95090f8bF5240149e";
-const MIN_STAKE = ethers.parseUnits("1", 6); // 1 USDC
+const USDT = process.env.USDT_TOKEN ?? "0x7aB6f3ed87C42eF0aDb67Ed95090f8bF5240149e";
+const MIN_STAKE = ethers.parseUnits("1", 6); // 1 USDT
 
 async function main() {
   const [deployer] = await ethers.getSigners();
@@ -25,7 +25,7 @@ async function main() {
   const Consensus = await ethers.getContractFactory("ValidatorConsensus");
   const consensus = await upgrades.deployProxy(
     Consensus,
-    [USDC, await commerce.getAddress(), MIN_STAKE],
+    [USDT, await commerce.getAddress(), MIN_STAKE],
     { kind: "uups" }
   );
   await consensus.waitForDeployment();

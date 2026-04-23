@@ -14,4 +14,4 @@ for (const name of agents) {
 
 console.log("Usage:");
 console.log("1. Put the Private Key in the agent's .env (SELLER_PRIVATE_KEY or VALIDATOR_PRIVATE_KEY)");
-console.log("2. Fund the Address with Kite ETH (gas) and USDC (payment/stake)");
+console.log("2. Fund the Address with Kite ETH (gas) and USDT (payment/stake)");

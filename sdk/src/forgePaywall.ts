@@ -8,7 +8,7 @@ const KITE_PASSPORT_TOKEN = "0x0fF5393387ad2f9f691FD6Fd28e07E3969e27e63";
 export interface ForgePaywallOptions {
   /** EVM address to receive payment (0x...). */
   payTo: string;
-  /** Price in USDC as a decimal string e.g. "0.01" */
+  /** Price in USDT as a decimal string e.g. "0.01" */
   price: string;
   description?: string;
   merchantName?: string;

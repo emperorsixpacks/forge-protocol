@@ -24,7 +24,7 @@ export class ValidatorConsensusClient {
   }
 
   async stake(amount: bigint): Promise<void> {
-    const erc20 = new Contract(this.cfg.usdcToken, ERC20_ABI, this.cfg.signerOrProvider as ContractRunner);
+    const erc20 = new Contract(this.cfg.usdtToken, ERC20_ABI, this.cfg.signerOrProvider as ContractRunner);
     await (await erc20.approve(this.cfg.validatorConsensusContract, amount)).wait();
     const tx = await this.contract.stake(amount);
     const receipt = await tx.wait();
@@ -71,7 +71,7 @@ export class ValidatorConsensusClient {
   }
 
   async depositRewards(amount: bigint): Promise<void> {
-    const erc20 = new Contract(this.cfg.usdcToken, ERC20_ABI, this.cfg.signerOrProvider as ContractRunner);
+    const erc20 = new Contract(this.cfg.usdtToken, ERC20_ABI, this.cfg.signerOrProvider as ContractRunner);
     await (await erc20.approve(this.cfg.validatorConsensusContract, amount)).wait();
     const tx = await this.contract.depositRewards(amount);
     await tx.wait();

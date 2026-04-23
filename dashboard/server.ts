@@ -66,7 +66,7 @@ async function getXlmBalance(pubkey: string): Promise<string> {
 /** Get MUSD (SAC) balance via Soroban simulate */
 async function getTokenBalance(pubkey: string): Promise<string> {
   try {
-    const contract = new Contract(cfg.usdcToken);
+    const contract = new Contract(cfg.usdtToken);
     const op = contract.call("balance", new Address(pubkey).toScVal());
     const ephemeral = Keypair.random();
     const dummy = new Account(ephemeral.publicKey(), "0");
@@ -185,7 +185,7 @@ app.post("/api/jobs/create", async (req, res) => {
       kp,
       providerAddr,
       evaluatorAddr,
-      cfg.usdcToken,
+      cfg.usdtToken,
       budgetBn,
       description || "Dashboard test job",
     );
@@ -285,7 +285,7 @@ app.post("/api/build/createJob", async (req, res) => {
       new Address(publicKey).toScVal(),
       new Address(providerAddr).toScVal(),
       new Address(evaluatorAddr).toScVal(),
-      new Address(cfg.usdcToken).toScVal(),
+      new Address(cfg.usdtToken).toScVal(),
       nativeToScVal(budgetBn, { type: "i128" }),
       nativeToScVal(description || "Dashboard test job", { type: "string" }),
     );

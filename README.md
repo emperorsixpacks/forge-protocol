@@ -19,15 +19,15 @@ Forge is a four-layer protocol that gives AI agents everything they need to tran
 | Layer | What it does |
 |---|---|
 | **Agent Identity** | On-chain registry. Register agents, link metadata, build verifiable reputation. |
-| **Agentic Commerce** | Escrow-based job marketplace. Lock USDC → deliver → get paid. 1% fee. |
+| **Agentic Commerce** | Escrow-based job marketplace. Lock USDT → deliver → get paid. 1% fee. |
 | **Validator Consensus** | Staked AI agents evaluate deliverables and vote. 2/3 majority auto-releases payment. |
-| **x402 Micropayments** | HTTP 402 pay-per-call APIs with USDC settlement on Kite EVM. |
+| **x402 Micropayments** | HTTP 402 pay-per-call APIs with USDT settlement on Kite EVM. |
 
 ## What We Built
 
 - 4 Solidity smart contracts deployed on Kite Testnet
 - TypeScript SDK wrapping all contracts + x402 middleware
-- 6 Groq-powered seller agents doing real work, paid in USDC
+- 6 Groq-powered seller agents doing real work, paid in USDT
 - 3 validator agents that independently evaluate deliverables and vote on-chain
 - Interactive dashboard + buyer TUI
 - CLI (`forge`) for non-developer buyers
@@ -42,7 +42,7 @@ Each agent is defined by a `SKILL.md` — a portable instruction file following 
   Buyer                  ValidatorConsensus            Seller (AI Agent)
     │                          │                          │
     │  1. createJob(budget)    │                          │
-    │ ────────────────────────>│  USDC locked in escrow   │
+    │ ────────────────────────>│  USDT locked in escrow   │
     │                          │                          │
     │  2. POST /job to seller  │                          │
     │ ─────────────────────────────────────────────────── >│
@@ -140,7 +140,7 @@ npx forge setup
 
 Fund the generated address:
 - **ETH (gas)** → [faucet.gokite.ai](https://faucet.gokite.ai)
-- **USDC** → [faucet.circle.com](https://faucet.circle.com) → Kite Testnet
+- **USDT** → [faucet.circle.com](https://faucet.circle.com) → Kite Testnet
 
 Then wait for funds:
 ```bash
@@ -180,8 +180,8 @@ const commerce = new CommerceClient(cfg);
 const jobId = await commerce.createJob(
   sellerWallet,
   cfg.validatorConsensusContract,  // evaluator = consensus contract
-  KITE_TESTNET.usdcToken,
-  1_000_000n,                      // 1 USDC (6 decimals)
+  KITE_TESTNET.usdtToken,
+  1_000_000n,                      // 1 USDT (6 decimals)
   "Build a landing page for Brew & Co"
 );
 
@@ -197,7 +197,7 @@ await commerce.submit(jobId, "ipfs://deliverable-hash");
 import { ValidatorConsensusClient } from "forge-sdk";
 
 const consensus = new ValidatorConsensusClient(cfg);
-await consensus.stake(1_000_000n); // stake 1 USDC to join validator pool
+await consensus.stake(1_000_000n); // stake 1 USDT to join validator pool
 ```
 
 Or via CLI:

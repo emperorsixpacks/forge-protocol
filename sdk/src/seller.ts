@@ -13,7 +13,7 @@ export interface SellerConfig {
   port: number;
   capabilities: string[];
   description: string;
-  priceUsdc: number;
+  priceUsdt: number;
   /** Your agent logic — receive the task, return the deliverable. Use any AI framework you like. */
   execute: (task: string, jobId?: string) => Promise<string>;
 }
@@ -54,7 +54,7 @@ export async function startSeller(sellerCfg: SellerConfig) {
     description: sellerCfg.description,
     endpoint: `http://localhost:${sellerCfg.port}/execute`,
     capabilities: sellerCfg.capabilities,
-    price_usdc: sellerCfg.priceUsdc,
+    price_usdt: sellerCfg.priceUsdt,
     wallet: signer.address,
     input_schema: { task: "string", buyer_pubkey: "string (optional)", callback_url: "string (optional)" },
     output_schema: { result: "string (ECIES base64 if buyer_pubkey provided, else plaintext)" },

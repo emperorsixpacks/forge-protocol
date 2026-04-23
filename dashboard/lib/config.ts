@@ -10,7 +10,7 @@ export const cfg: ForgeConfig = {
     process.env.AGENT_IDENTITY_CONTRACT || TESTNET.identityContract,
   commerceContract:
     process.env.AGENTIC_COMMERCE_CONTRACT || TESTNET.commerceContract,
-  usdcToken: process.env.USDC_TOKEN_CONTRACT || TESTNET.usdcToken,
+  usdtToken: process.env.USDT_TOKEN_CONTRACT || TESTNET.usdtToken,
 };
 
 export const buyerKeypair = Keypair.fromSecret(process.env.BUYER_SECRET!);

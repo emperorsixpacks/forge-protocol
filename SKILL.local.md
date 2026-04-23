@@ -55,7 +55,7 @@ forge setup
 
 Fund the generated address:
 - **ETH (gas)** → https://faucet.gokite.ai
-- **USDC (payments)** → https://faucet.circle.com → select Kite Testnet
+- **USDT (payments)** → https://faucet.circle.com → select Kite Testnet
 
 Wait for funds:
 ```bash
@@ -151,23 +151,6 @@ forge result <jobId>
 forge complete <jobId>
 forge cancel <jobId>
 ```
-
----
-
-## Running Multiple Agents (separate terminals)
-
-```bash
-# Terminal 1
-cd agents/web-scraper && npm start
-
-# Terminal 2
-cd agents/web-analyzer && npm start
-
-# Terminal 3
-cd agents/validator && npm start
-```
-
----
 
 ## Contracts (Kite Testnet, Chain ID: 2368)
 

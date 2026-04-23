@@ -25,7 +25,7 @@ export function saveWallet(wallet: ForgeWallet) {
 }
 
 const ERC20_ABI = ["function balanceOf(address) view returns (uint256)"];
-const MIN_USDC = BigInt(process.env.MIN_USDC_WEI ?? "1000000"); // 1 USDC default
+const MIN_USDT = BigInt(process.env.MIN_USDT_WEI ?? "1000000"); // 1 USDT default
 
 export async function cmdSetup() {
   if (existsSync(CONFIG_PATH)) {
@@ -40,23 +40,23 @@ export async function cmdSetup() {
   console.log(JSON.stringify({
     address: wallet.address,
     config: CONFIG_PATH,
-    next: `Fund your wallet with USDC on Kite testnet, then run: forge setup --wait`,
+    next: `Fund your wallet with USDT on Kite testnet, then run: forge setup --wait`,
     faucet: "https://faucet.gokite.ai",
-    usdc_contract: KITE_TESTNET.usdcToken,
+    usdt_contract: KITE_TESTNET.usdtToken,
   }, null, 2));
 }
 
 export async function cmdSetupWait() {
   const { address } = loadWallet();
   const provider = new ethers.JsonRpcProvider(process.env.RPC_URL ?? KITE_TESTNET.rpcUrl);
-  const usdc = new ethers.Contract(KITE_TESTNET.usdcToken, ERC20_ABI, provider);
+  const usdt = new ethers.Contract(KITE_TESTNET.usdtToken, ERC20_ABI, provider);
 
-  console.error(`Waiting for USDC at ${address} ...`);
+  console.error(`Waiting for USDT at ${address} ...`);
 
   while (true) {
-    const balance: bigint = await usdc.balanceOf(address).catch(() => 0n);
-    if (balance >= MIN_USDC) {
-      console.log(JSON.stringify({ ready: true, address, usdc_balance: balance.toString() }));
+    const balance: bigint = await usdt.balanceOf(address).catch(() => 0n);
+    if (balance >= MIN_USDT) {
+      console.log(JSON.stringify({ ready: true, address, usdt_balance: balance.toString() }));
       return;
     }
     await new Promise((r) => setTimeout(r, 5000));
