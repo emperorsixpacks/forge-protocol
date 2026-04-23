@@ -53,7 +53,7 @@ export async function startSeller(sellerCfg: SellerConfig) {
   const manifest: Record<string, any> = {
     name: sellerCfg.agentId,
     description: sellerCfg.description,
-    endpoint: `http://localhost:${sellerCfg.port}/execute`,
+    endpoint: `${process.env.PUBLIC_URL ?? `http://localhost:${sellerCfg.port}`}/execute`,
     capabilities: sellerCfg.capabilities,
     price_usdt: sellerCfg.priceUsdt,
     wallet: signer.address,
