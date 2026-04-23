@@ -40,27 +40,38 @@ export async function startValidator(validatorCfg: ValidatorConfig) {
   const consensus = new ValidatorConsensusClient(cfg);
   const commerce = new CommerceClient(cfg);
 
-  // auto-stake if configured and not already staked
+  // auto-stake if configured and not already staked — retry until RPC is ready
   if (validatorCfg.stakeAmount) {
-    consensus.stakedAmount(signer.address).then(async (current: bigint) => {
-      if (current === 0n) {
-        log.info("auto_staking", { amount: validatorCfg.stakeAmount!.toString(), address: signer.address });
-        await consensus.stake(validatorCfg.stakeAmount!);
-        log.info("staked", { amount: validatorCfg.stakeAmount!.toString() });
-      } else {
-        log.info("already_staked", { amount: current.toString() });
+    const tryStake = async () => {
+      for (let attempt = 1; attempt <= 10; attempt++) {
+        try {
+          const current = await consensus.stakedAmount(signer.address);
+          if (current > 0n) {
+            log.info("already_staked", { amount: current.toString() });
+            return;
+          }
+          log.info("auto_staking", { amount: validatorCfg.stakeAmount!.toString(), address: signer.address });
+          await consensus.stake(validatorCfg.stakeAmount!);
+          log.info("staked", { amount: validatorCfg.stakeAmount!.toString() });
+          return;
+        } catch (e: any) {
+          if (e.message?.includes("insufficient funds") || e.code === "INSUFFICIENT_FUNDS") {
+            log.error("insufficient_funds", {
+              message: `Validator wallet has no KITE. Fund ${signer.address} at https://faucet.gokite.ai then restart.`,
+              address: signer.address,
+              faucet: "https://faucet.gokite.ai",
+            });
+            return; // no point retrying
+          }
+          if (attempt < 10) {
+            await new Promise((r) => setTimeout(r, 3000 * attempt));
+          } else {
+            log.warn("auto_stake_failed", { error: e.message });
+          }
+        }
       }
-    }).catch((e: Error) => {
-      if (e.message.includes("insufficient funds") || e.message.includes("INSUFFICIENT_FUNDS")) {
-        log.error("insufficient_funds", {
-          message: `Validator wallet has no KITE. Fund ${signer.address} at https://faucet.gokite.ai then restart.`,
-          address: signer.address,
-          faucet: "https://faucet.gokite.ai",
-        });
-      } else {
-        log.warn("auto_stake_failed", { error: e.message });
-      }
-    });
+    };
+    tryStake();
   }
 
   // ── Poll for open validation rounds ──────────────────────────────────────
