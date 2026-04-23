@@ -119,19 +119,19 @@ export async function startSeller(sellerCfg: SellerConfig) {
 
     try {
       const plaintext = await sellerCfg.execute(task, jobId);
-      const deliverable = buyer_pubkey ? encrypt(buyer_pubkey, plaintext) : plaintext;
 
+      // submit plaintext on-chain so validators can evaluate it
       const commerce = new CommerceClient(cfg);
       for (let attempt = 1; attempt <= 5; attempt++) {
         try {
-          await commerce.submit(BigInt(jobId), deliverable);
+          await commerce.submit(BigInt(jobId), plaintext);
           log.info("job_submitted_onchain", { jobId, attempt });
           break;
         } catch (e) {
           const msg = (e as Error).message;
           if (msg.includes("invalid status")) {
             log.warn("job_already_submitted", { jobId });
-            break; // already submitted, don't retry
+            break;
           }
           if (attempt === 5) throw e;
           log.warn("job_submit_retry", { jobId, attempt, error: msg });
@@ -139,9 +139,10 @@ export async function startSeller(sellerCfg: SellerConfig) {
         }
       }
 
-      log.info("job_completed", { jobId, encrypted: !!buyer_pubkey });
+      // send encrypted result to buyer via callback if pubkey provided
       if (callback_url) {
-        await fireWebhook(callback_url, { jobId, status: "submitted", encrypted: !!buyer_pubkey }, log);
+        const output = buyer_pubkey ? encrypt(buyer_pubkey, plaintext) : plaintext;
+        await fireWebhook(callback_url, { jobId, status: "submitted", result: output, encrypted: !!buyer_pubkey }, log);
       }
     } catch (err) {
       log.error("job_failed", { jobId, error: (err as Error).message });

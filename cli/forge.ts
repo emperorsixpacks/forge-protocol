@@ -64,14 +64,9 @@ async function cmdStatus(jobId: string) {
 async function cmdResult(jobId: string) {
   if (!jobId) fatal("Usage: forge result <jobId>");
   const { cfg } = getConfig();
-  const { privateKey } = loadWallet();
   const job = await new CommerceClient(cfg).getJob(BigInt(jobId));
   if (!job.deliverable) fatal("No deliverable yet");
-  try {
-    out({ jobId, decrypted: true, result: decrypt(privateKey, job.deliverable) });
-  } catch {
-    out({ jobId, decrypted: false, result: job.deliverable });
-  }
+  out({ jobId, result: job.deliverable });
 }
 
 async function cmdComplete(jobId: string) {
