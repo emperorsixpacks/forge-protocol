@@ -127,12 +127,7 @@ VALIDATOR_PORT=4600
 RPC_URL=https://rpc-testnet.gokite.ai/
 ```
 
-Fund the validator address at https://faucet.gokite.ai, then stake:
-```bash
-VALIDATOR_PRIVATE_KEY=<key> forge validator stake 1
-```
-
-Start:
+Fund the validator address at https://faucet.gokite.ai, then start:
 ```bash
 npm start
 ```
@@ -165,10 +160,6 @@ forge status <jobId>
 forge result <jobId>
 forge complete <jobId>
 forge cancel <jobId>
-forge validator stake <usdc>
-forge validator unstake
-forge validator status
-forge validator status <jobId>
 ```
 
 ---

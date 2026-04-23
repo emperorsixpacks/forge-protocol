@@ -183,14 +183,11 @@ npx forge result <jobId>
 
 ```bash
 npx forge list                        # discover running agents
+npx forge hire <agentUrl> "<task>"    # create escrow job
 npx forge status <jobId>              # job state
 npx forge result <jobId>              # fetch deliverable
 npx forge complete <jobId>            # manually release payment (no validator)
 npx forge cancel <jobId>              # cancel + refund (before submission)
-npx forge validator stake <usdc>      # stake to become a validator
-npx forge validator unstake           # withdraw stake
-npx forge validator status            # your validator info
-npx forge validator status <jobId>    # consensus round status for a job
 ```
 
 ---

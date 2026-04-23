@@ -1,7 +1,7 @@
 #!/usr/bin/env tsx
 import "dotenv/config";
 import { ethers } from "ethers";
-import { IdentityClient, CommerceClient, ValidatorConsensusClient, PassportClient, KITE_TESTNET, decrypt, type ForgeConfig } from "forge-sdk";
+import { IdentityClient, CommerceClient, KITE_TESTNET, decrypt, type ForgeConfig } from "forge-sdk";
 import { loadWallet, cmdSetup, cmdSetupWait } from "./setup.js";
 
 // ── Config ────────────────────────────────────────────────────────────────────
@@ -88,64 +88,6 @@ async function cmdCancel(jobId: string) {
   out({ jobId, status: "Cancelled" });
 }
 
-// ── Validator commands ────────────────────────────────────────────────────────
-
-async function cmdValidatorStake(amount?: string) {
-  if (!amount) fatal("Usage: forge validator stake <usdcAmount>");
-  const { cfg } = getConfig();
-  const wei = ethers.parseUnits(amount, 6); // USDC has 6 decimals on Kite
-  await new ValidatorConsensusClient(cfg).stake(wei);
-  out({ staked: amount, status: "staked" });
-}
-
-async function cmdValidatorUnstake() {
-  const { cfg } = getConfig();
-  await new ValidatorConsensusClient(cfg).unstake();
-  out({ status: "unstaked" });
-}
-
-async function cmdValidatorStatus(jobId?: string) {
-  const { cfg, signer } = getConfig();
-  const client = new ValidatorConsensusClient(cfg);
-  if (jobId) {
-    const round = await client.roundStatus(BigInt(jobId));
-    const voted = await client.hasVoted(BigInt(jobId), signer.address);
-    out({ jobId, ...round, approvals: round.approvals.toString(), rejections: round.rejections.toString(), myVote: voted ? "cast" : "pending" });
-  } else {
-    const staked = await client.stakedAmount(signer.address);
-    const count = await client.validatorCount();
-    const min = await client.minStake();
-    out({ address: signer.address, staked: staked.toString(), validatorCount: count.toString(), minStake: min.toString() });
-  }
-}
-
-// ── Passport commands ─────────────────────────────────────────────────────────
-
-async function cmdPassportOpen(agentWallet: string, maxUsdc: string, hours: string) {
-  if (!agentWallet || !maxUsdc) fatal("Usage: forge passport open <agentWallet> <maxUsdc> [hours=24]");
-  const { cfg } = getConfig();
-  const maxSpend = ethers.parseUnits(maxUsdc, 6);
-  const expiresAt = Math.floor(Date.now() / 1000) + (Number(hours ?? 24) * 3600);
-  const sessionId = await new PassportClient(cfg).openSession(agentWallet, KITE_TESTNET.usdcToken, maxSpend, expiresAt);
-  out({ sessionId: sessionId.toString(), agentWallet, maxUsdc, expiresAt });
-}
-
-async function cmdPassportStatus(sessionId: string) {
-  if (!sessionId) fatal("Usage: forge passport status <sessionId>");
-  const { cfg } = getConfig();
-  const passport = new PassportClient(cfg);
-  const session = await passport.getSession(BigInt(sessionId));
-  const remaining = await passport.remaining(BigInt(sessionId));
-  out({ ...session, maxSpend: session.maxSpend.toString(), spent: session.spent.toString(), remaining: remaining.toString() });
-}
-
-async function cmdPassportRevoke(sessionId: string) {
-  if (!sessionId) fatal("Usage: forge passport revoke <sessionId>");
-  const { cfg } = getConfig();
-  await new PassportClient(cfg).revokeSession(BigInt(sessionId));
-  out({ sessionId, status: "revoked" });
-}
-
 // ── Router ────────────────────────────────────────────────────────────────────
 
 const [,, cmd, ...args] = process.argv;
@@ -158,37 +100,19 @@ const commands: Record<string, () => Promise<void>> = {
   result:   () => cmdResult(args[0]),
   complete: () => cmdComplete(args[0]),
   cancel:   () => cmdCancel(args[0]),
-  validator: () => {
-    const sub = args[0];
-    if (sub === "stake")   return cmdValidatorStake(args[1]);
-    if (sub === "unstake") return cmdValidatorUnstake();
-    if (sub === "status")  return cmdValidatorStatus(args[1]);
-    fatal("Usage: forge validator <stake <amount> | unstake | status [jobId]>");
-  },
-  passport: () => {
-    const sub = args[0];
-    if (sub === "open")   return cmdPassportOpen(args[1], args[2], args[3]);
-    if (sub === "status") return cmdPassportStatus(args[1]);
-    if (sub === "revoke") return cmdPassportRevoke(args[1]);
-    fatal("Usage: forge passport <open <agentWallet> <maxUsdc> [hours] | status <sessionId> | revoke <sessionId>>");
-  },
 };
 
 if (!cmd || !commands[cmd]) {
   console.log(JSON.stringify({
     usage: "forge <command> [args]",
     commands: {
-      setup:              "forge setup [--wait] — create buyer wallet, optionally wait for USDC funding",
-      "wallet generate":  "forge wallet generate — generate EVM keypairs for all seller + validator agents",
-      list:               "Discover available seller agents",
-      hire:               "forge hire <agentUrl> \"<task>\" — create escrow job",
-      status:             "forge status <jobId> — check job status",
-      result:             "forge result <jobId> — fetch + decrypt deliverable",
-      complete:           "forge complete <jobId> — release payment to seller",
-      cancel:             "forge cancel <jobId> — cancel job + refund",
-      "validator stake":  "forge validator stake <usdcAmount> — stake USDC to become a validator",
-      "validator unstake":"forge validator unstake — withdraw stake",
-      "validator status": "forge validator status [jobId] — show stake info or round status for a job",
+      setup:    "forge setup [--wait] — create buyer wallet, optionally wait for USDC funding",
+      list:     "forge list — discover available seller agents",
+      hire:     "forge hire <agentUrl> \"<task>\" — create escrow job and send task",
+      status:   "forge status <jobId> — check job status",
+      result:   "forge result <jobId> — fetch and decrypt deliverable",
+      complete: "forge complete <jobId> — manually release payment to seller",
+      cancel:   "forge cancel <jobId> — cancel job and get refund",
     },
   }, null, 2));
   process.exit(0);
