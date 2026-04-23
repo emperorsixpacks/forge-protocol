@@ -152,6 +152,27 @@ export async function startSeller(sellerCfg: SellerConfig) {
     }
   });
 
-  app.listen(sellerCfg.port, () => log.info("seller_started", { port: sellerCfg.port }));
+  app.listen(sellerCfg.port, () => {
+    log.info("seller_started", { port: sellerCfg.port });
+
+    // register with registry and heartbeat every 30s
+    const registryUrl = process.env.REGISTRY_URL;
+    if (registryUrl) {
+      const heartbeat = () => fetch(`${registryUrl}/register`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          agentId: sellerCfg.agentId,
+          url: manifest.endpoint.replace("/execute", ""),
+          description: sellerCfg.description,
+          capabilities: sellerCfg.capabilities,
+          priceUsdt: sellerCfg.priceUsdt,
+          wallet: signer.address,
+        }),
+      }).catch(() => {}); // non-fatal
+      heartbeat();
+      setInterval(heartbeat, 30_000);
+    }
+  });
 }
 

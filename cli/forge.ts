@@ -23,6 +23,12 @@ function fatal(msg: string): never { console.error(JSON.stringify({ error: msg }
 // ── Commands ──────────────────────────────────────────────────────────────────
 
 async function cmdList() {
+  const registryUrl = process.env.REGISTRY_URL;
+  if (registryUrl) {
+    const agents = await fetch(`${registryUrl}/agents`).then((r) => r.json());
+    return out(agents);
+  }
+  // fallback: ping known URLs directly
   const results = await Promise.allSettled(
     SELLER_URLS.map((url) => fetch(`${url}/.well-known/agent.json`).then((r) => r.json()).then((m) => ({ ...m, url })))
   );
