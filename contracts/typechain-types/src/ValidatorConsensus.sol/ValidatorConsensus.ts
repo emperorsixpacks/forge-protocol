@@ -36,17 +36,16 @@ export interface ValidatorConsensusInterface extends Interface {
       | "proxiableUUID"
       | "renounceOwnership"
       | "requestValidation"
+      | "rewardPool"
       | "roundStatus"
       | "setCommerce"
       | "setMinStake"
       | "stake"
       | "staked"
-      | "token"
       | "transferOwnership"
       | "unstake"
       | "upgradeToAndCall"
       | "validatorCount"
-      | "validatorFeeBps"
       | "validatorList"
       | "vote"
   ): FunctionFragment;
@@ -70,7 +69,7 @@ export interface ValidatorConsensusInterface extends Interface {
   encodeFunctionData(functionFragment: "commerce", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "depositRewards",
-    values: [BigNumberish]
+    values?: undefined
   ): string;
   encodeFunctionData(
     functionFragment: "hasVoted",
@@ -78,7 +77,7 @@ export interface ValidatorConsensusInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "initialize",
-    values: [AddressLike, AddressLike, BigNumberish]
+    values: [AddressLike, BigNumberish]
   ): string;
   encodeFunctionData(functionFragment: "minStake", values?: undefined): string;
   encodeFunctionData(functionFragment: "owner", values?: undefined): string;
@@ -95,6 +94,10 @@ export interface ValidatorConsensusInterface extends Interface {
     values: [BigNumberish]
   ): string;
   encodeFunctionData(
+    functionFragment: "rewardPool",
+    values?: undefined
+  ): string;
+  encodeFunctionData(
     functionFragment: "roundStatus",
     values: [BigNumberish]
   ): string;
@@ -106,9 +109,8 @@ export interface ValidatorConsensusInterface extends Interface {
     functionFragment: "setMinStake",
     values: [BigNumberish]
   ): string;
-  encodeFunctionData(functionFragment: "stake", values: [BigNumberish]): string;
+  encodeFunctionData(functionFragment: "stake", values?: undefined): string;
   encodeFunctionData(functionFragment: "staked", values: [AddressLike]): string;
-  encodeFunctionData(functionFragment: "token", values?: undefined): string;
   encodeFunctionData(
     functionFragment: "transferOwnership",
     values: [AddressLike]
@@ -120,10 +122,6 @@ export interface ValidatorConsensusInterface extends Interface {
   ): string;
   encodeFunctionData(
     functionFragment: "validatorCount",
-    values?: undefined
-  ): string;
-  encodeFunctionData(
-    functionFragment: "validatorFeeBps",
     values?: undefined
   ): string;
   encodeFunctionData(
@@ -160,6 +158,7 @@ export interface ValidatorConsensusInterface extends Interface {
     functionFragment: "requestValidation",
     data: BytesLike
   ): Result;
+  decodeFunctionResult(functionFragment: "rewardPool", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "roundStatus",
     data: BytesLike
@@ -174,7 +173,6 @@ export interface ValidatorConsensusInterface extends Interface {
   ): Result;
   decodeFunctionResult(functionFragment: "stake", data: BytesLike): Result;
   decodeFunctionResult(functionFragment: "staked", data: BytesLike): Result;
-  decodeFunctionResult(functionFragment: "token", data: BytesLike): Result;
   decodeFunctionResult(
     functionFragment: "transferOwnership",
     data: BytesLike
@@ -186,10 +184,6 @@ export interface ValidatorConsensusInterface extends Interface {
   ): Result;
   decodeFunctionResult(
     functionFragment: "validatorCount",
-    data: BytesLike
-  ): Result;
-  decodeFunctionResult(
-    functionFragment: "validatorFeeBps",
     data: BytesLike
   ): Result;
   decodeFunctionResult(
@@ -356,11 +350,7 @@ export interface ValidatorConsensus extends BaseContract {
 
   commerce: TypedContractMethod<[], [string], "view">;
 
-  depositRewards: TypedContractMethod<
-    [amount: BigNumberish],
-    [void],
-    "nonpayable"
-  >;
+  depositRewards: TypedContractMethod<[], [void], "payable">;
 
   hasVoted: TypedContractMethod<
     [jobId: BigNumberish, validator: AddressLike],
@@ -369,7 +359,7 @@ export interface ValidatorConsensus extends BaseContract {
   >;
 
   initialize: TypedContractMethod<
-    [_token: AddressLike, _commerce: AddressLike, _minStake: BigNumberish],
+    [_commerce: AddressLike, _minStake: BigNumberish],
     [void],
     "nonpayable"
   >;
@@ -387,6 +377,8 @@ export interface ValidatorConsensus extends BaseContract {
     [void],
     "nonpayable"
   >;
+
+  rewardPool: TypedContractMethod<[], [bigint], "view">;
 
   roundStatus: TypedContractMethod<
     [jobId: BigNumberish],
@@ -412,11 +404,9 @@ export interface ValidatorConsensus extends BaseContract {
     "nonpayable"
   >;
 
-  stake: TypedContractMethod<[amount: BigNumberish], [void], "nonpayable">;
+  stake: TypedContractMethod<[], [void], "payable">;
 
   staked: TypedContractMethod<[arg0: AddressLike], [bigint], "view">;
-
-  token: TypedContractMethod<[], [string], "view">;
 
   transferOwnership: TypedContractMethod<
     [newOwner: AddressLike],
@@ -433,8 +423,6 @@ export interface ValidatorConsensus extends BaseContract {
   >;
 
   validatorCount: TypedContractMethod<[], [bigint], "view">;
-
-  validatorFeeBps: TypedContractMethod<[], [bigint], "view">;
 
   validatorList: TypedContractMethod<[arg0: BigNumberish], [string], "view">;
 
@@ -456,7 +444,7 @@ export interface ValidatorConsensus extends BaseContract {
   ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "depositRewards"
-  ): TypedContractMethod<[amount: BigNumberish], [void], "nonpayable">;
+  ): TypedContractMethod<[], [void], "payable">;
   getFunction(
     nameOrSignature: "hasVoted"
   ): TypedContractMethod<
@@ -467,7 +455,7 @@ export interface ValidatorConsensus extends BaseContract {
   getFunction(
     nameOrSignature: "initialize"
   ): TypedContractMethod<
-    [_token: AddressLike, _commerce: AddressLike, _minStake: BigNumberish],
+    [_commerce: AddressLike, _minStake: BigNumberish],
     [void],
     "nonpayable"
   >;
@@ -486,6 +474,9 @@ export interface ValidatorConsensus extends BaseContract {
   getFunction(
     nameOrSignature: "requestValidation"
   ): TypedContractMethod<[jobId: BigNumberish], [void], "nonpayable">;
+  getFunction(
+    nameOrSignature: "rewardPool"
+  ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "roundStatus"
   ): TypedContractMethod<
@@ -507,13 +498,10 @@ export interface ValidatorConsensus extends BaseContract {
   ): TypedContractMethod<[_minStake: BigNumberish], [void], "nonpayable">;
   getFunction(
     nameOrSignature: "stake"
-  ): TypedContractMethod<[amount: BigNumberish], [void], "nonpayable">;
+  ): TypedContractMethod<[], [void], "payable">;
   getFunction(
     nameOrSignature: "staked"
   ): TypedContractMethod<[arg0: AddressLike], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "token"
-  ): TypedContractMethod<[], [string], "view">;
   getFunction(
     nameOrSignature: "transferOwnership"
   ): TypedContractMethod<[newOwner: AddressLike], [void], "nonpayable">;
@@ -529,9 +517,6 @@ export interface ValidatorConsensus extends BaseContract {
   >;
   getFunction(
     nameOrSignature: "validatorCount"
-  ): TypedContractMethod<[], [bigint], "view">;
-  getFunction(
-    nameOrSignature: "validatorFeeBps"
   ): TypedContractMethod<[], [bigint], "view">;
   getFunction(
     nameOrSignature: "validatorList"

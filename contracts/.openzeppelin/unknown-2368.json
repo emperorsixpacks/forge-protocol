@@ -22,8 +22,13 @@
       "kind": "uups"
     },
     {
-      "address": "0xDf962b69101B02bE082697Cd0262c9fdc7c57024",
+      "address": "0xb8F2233Be2c413bB9235F51E1531B3C64A135b25",
       "txHash": "0xfcac2431b7aefcfa48c3e7aa902bb677d0fd38e8c20224c4ade0d6bb4844998c",
+      "kind": "uups"
+    },
+    {
+      "address": "0xb8F2233Be2c413bB9235F51E1531B3C64A135b25",
+      "txHash": "0xaa7594f17910b2eea1976a08579c223386c16c5bf0b8e359ae8c32d4d8ceccd5",
       "kind": "uups"
     }
   ],
@@ -979,6 +984,197 @@
             "numberOfBytes": "32"
           },
           "t_struct(Round)2434_storage": {
+            "label": "struct ValidatorConsensus.Round",
+            "members": [
+              {
+                "label": "open",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "approvals",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "rejections",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "voted",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "approvers",
+                "type": "t_array(t_address)dyn_storage",
+                "offset": 0,
+                "slot": "4"
+              }
+            ],
+            "numberOfBytes": "160"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Ownable": [
+            {
+              "contract": "OwnableUpgradeable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:24",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin/contracts/proxy/utils/Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin/contracts/proxy/utils/Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    },
+    "c1d3141e51617f4cb642ec0d4bb2f5b6a3dd723aa31e4afb399f563c94704c2e": {
+      "address": "0xd7056F73F689A5fec40EfcB7B04d0611c28125E2",
+      "txHash": "0xf510802a2661a0ffccbc87f87fabc19e6fb83c1819fbb8b3a8bc4403d7ecb237",
+      "layout": {
+        "solcVersion": "0.8.24",
+        "storage": [
+          {
+            "label": "commerce",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_contract(IAgenticCommerce)10118",
+            "contract": "ValidatorConsensus",
+            "src": "src/ValidatorConsensus.sol:28"
+          },
+          {
+            "label": "minStake",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256",
+            "contract": "ValidatorConsensus",
+            "src": "src/ValidatorConsensus.sol:30"
+          },
+          {
+            "label": "rewardPool",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint256",
+            "contract": "ValidatorConsensus",
+            "src": "src/ValidatorConsensus.sol:31"
+          },
+          {
+            "label": "validatorList",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_array(t_address)dyn_storage",
+            "contract": "ValidatorConsensus",
+            "src": "src/ValidatorConsensus.sol:38"
+          },
+          {
+            "label": "staked",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "ValidatorConsensus",
+            "src": "src/ValidatorConsensus.sol:39"
+          },
+          {
+            "label": "_rounds",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_mapping(t_uint64,t_struct(Round)10163_storage)",
+            "contract": "ValidatorConsensus",
+            "src": "src/ValidatorConsensus.sol:57"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_struct(InitializableStorage)730_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(OwnableStorage)13_storage": {
+            "label": "struct OwnableUpgradeable.OwnableStorage",
+            "members": [
+              {
+                "label": "_owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_array(t_address)dyn_storage": {
+            "label": "address[]",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IAgenticCommerce)10118": {
+            "label": "contract IAgenticCommerce",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint64,t_struct(Round)10163_storage)": {
+            "label": "mapping(uint64 => struct ValidatorConsensus.Round)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Round)10163_storage": {
             "label": "struct ValidatorConsensus.Round",
             "members": [
               {

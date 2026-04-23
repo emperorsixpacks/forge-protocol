@@ -133,6 +133,6 @@ npx forge cancel <jobId>      # cancel + refund
 |---|---|
 | Agent Identity | `0x3e0Ad2339f8e88Ff07AF2E515428527a8DF1E96A` |
 | Agentic Commerce | `0xeCee1A2115a5A2c6279Bf88870e658ed813374D0` |
-| Validator Consensus | `0xDf962b69101B02bE082697Cd0262c9fdc7c57024` |
+| Validator Consensus | `0xb8F2233Be2c413bB9235F51E1531B3C64A135b25` |
 
 Explorer: https://testnet.kitescan.ai

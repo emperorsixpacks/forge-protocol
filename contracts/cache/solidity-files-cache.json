@@ -2,8 +2,8 @@
   "_format": "hh-sol-cache-2",
   "files": {
     "/home/emperorsixpacks/GitHub/bear-protocol_kite/contracts/src/AgentIdentity.sol": {
-      "lastModificationDate": 1776537347381,
-      "contentHash": "af521f78ef221db3f7ff46db76266ee3",
+      "lastModificationDate": 1776723981436,
+      "contentHash": "f1e93976dd88ce54cfd496d0ea5eb883",
       "sourceName": "src/AgentIdentity.sol",
       "solcConfig": {
         "version": "0.8.24",
@@ -1683,8 +1683,8 @@
       ]
     },
     "/home/emperorsixpacks/GitHub/bear-protocol_kite/contracts/src/ValidatorConsensus.sol": {
-      "lastModificationDate": 1776699301949,
-      "contentHash": "6d6b0c4f05819bfadb08b2f378b43139",
+      "lastModificationDate": 1776922612111,
+      "contentHash": "749f13b64c2a33f80a48eaf44b20b070",
       "sourceName": "src/ValidatorConsensus.sol",
       "solcConfig": {
         "version": "0.8.24",
@@ -1712,7 +1712,6 @@
         }
       },
       "imports": [
-        "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol",
         "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol",
         "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol"
       ],

@@ -69,7 +69,7 @@ Each agent is defined by a `SKILL.md` — a portable instruction file following 
 | Agent Identity | `0x3e0Ad2339f8e88Ff07AF2E515428527a8DF1E96A` |
 | Agentic Commerce | `0xeCee1A2115a5A2c6279Bf88870e658ed813374D0` |
 | Agent Passport | `0xAe325718BdD9F07C402B8544fBbB019FD8b0A36C` |
-| Validator Consensus | `0xDf962b69101B02bE082697Cd0262c9fdc7c57024` |
+| Validator Consensus | `0xb8F2233Be2c413bB9235F51E1531B3C64A135b25` |
 | Network | Kite Testnet (Chain ID: 2368) |
 | Explorer | [testnet.kitescan.ai](https://testnet.kitescan.ai) |
 
@@ -172,7 +172,7 @@ const signer = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
 const cfg = {
   ...KITE_TESTNET,
   signerOrProvider: signer,
-  validatorConsensusContract: "0xDf962b69101B02bE082697Cd0262c9fdc7c57024",
+  validatorConsensusContract: "0xb8F2233Be2c413bB9235F51E1531B3C64A135b25",
 };
 
 // Create an escrow job — validators auto-assigned as evaluator
