@@ -58,7 +58,7 @@ async function cmdStatus(jobId: string) {
   if (!jobId) fatal("Usage: forge status <jobId>");
   const { cfg } = getConfig();
   const job = await new CommerceClient(cfg).getJob(BigInt(jobId));
-  out({ ...job, id: job.id.toString(), budget: job.budget.toString() });
+  out(JSON.parse(JSON.stringify(job, (_, v) => typeof v === "bigint" ? v.toString() : v)));
 }
 
 async function cmdResult(jobId: string) {
@@ -96,7 +96,7 @@ const commands: Record<string, () => Promise<void>> = {
   setup:    () => args[0] === "--wait" ? cmdSetupWait() : cmdSetup(),
   balance:  () => cmdBalance(),
   list:     () => cmdList(),
-  hire:     () => cmdHire(args[0], args[1]),
+  hire:     () => cmdHire(args[0], args.slice(1).join(" ")),
   status:   () => cmdStatus(args[0]),
   result:   () => cmdResult(args[0]),
   complete: () => cmdComplete(args[0]),
