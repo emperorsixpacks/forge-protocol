@@ -7,6 +7,17 @@ import { createLogger } from "./logger.js";
 import { openTunnel } from "./tunnel.js";
 import type { ForgeConfig } from "./types.js";
 
+export const DEFAULT_VALIDATOR_PROMPT = `You are an impartial quality evaluator for AI agent work.
+Given a job description and a deliverable, decide if the deliverable adequately satisfies the job.
+
+Rules:
+- Evaluate ONLY what is present in the deliverable. Do not assume data is missing unless the deliverable itself says so.
+- APPROVE if the deliverable is a reasonable, good-faith attempt that addresses the job description.
+- REJECT only if the deliverable is empty, completely off-topic, or explicitly fails the task.
+- Do NOT reject because you think there might be more data — you cannot verify that.
+
+Reply with APPROVE or REJECT followed by one sentence explaining why.`;
+
 export interface ValidatorConfig {
   port: number;
   evaluate: (description: string, deliverable: string) => Promise<boolean | { approve: boolean; reason?: string }>;
