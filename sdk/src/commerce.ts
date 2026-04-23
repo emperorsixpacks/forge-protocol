@@ -60,7 +60,7 @@ export class CommerceClient {
     // auto-trigger validator consensus if configured — non-fatal
     if (this.cfg.validatorConsensusContract) {
       new ValidatorConsensusClient(this.cfg).requestValidation(jobId)
-        .catch((e) => this.cfg.onTx?.("", `requestValidation_failed: ${e.message}`));
+        .catch((e) => console.warn("requestValidation_failed", e.message));
     }
   }
 
