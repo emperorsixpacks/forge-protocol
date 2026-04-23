@@ -1,6 +1,6 @@
 import { ethers, upgrades } from "hardhat";
 
-const USDT = process.env.USDT_TOKEN ?? "0x7aB6f3ed87C42eF0aDb67Ed95090f8bF5240149e";
+const USDT = process.env.USDT_TOKEN ?? "0x0fF5393387ad2f9f691FD6Fd28e07E3969e27e63";
 const MIN_STAKE = ethers.parseUnits("1", 6); // 1 USDT
 
 async function main() {
