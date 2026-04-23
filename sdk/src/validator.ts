@@ -9,9 +9,10 @@ import type { ForgeConfig } from "./types.js";
 
 export interface ValidatorConfig {
   port: number;
-  /** Your evaluation logic — return true to approve, false to reject. Use any AI framework you like. */
   evaluate: (description: string, deliverable: string) => Promise<boolean>;
   pollIntervalMs?: number;
+  /** If set, auto-stake this amount on startup if not already staked */
+  stakeAmount?: bigint;
 }
 
 export async function startValidator(validatorCfg: ValidatorConfig) {
@@ -27,6 +28,19 @@ export async function startValidator(validatorCfg: ValidatorConfig) {
 
   const consensus = new ValidatorConsensusClient(cfg);
   const commerce = new CommerceClient(cfg);
+
+  // auto-stake if configured and not already staked
+  if (validatorCfg.stakeAmount) {
+    consensus.stakedAmount(signer.address).then(async (current: bigint) => {
+      if (current === 0n) {
+        log.info("auto_staking", { amount: validatorCfg.stakeAmount!.toString() });
+        await consensus.stake(validatorCfg.stakeAmount!);
+        log.info("staked", { amount: validatorCfg.stakeAmount!.toString() });
+      } else {
+        log.info("already_staked", { amount: current.toString() });
+      }
+    }).catch((e: Error) => log.warn("auto_stake_failed", { error: e.message }));
+  }
 
   // ── Poll for open validation rounds ──────────────────────────────────────
 
