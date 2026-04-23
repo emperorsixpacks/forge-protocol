@@ -1,157 +1,94 @@
 ---
 name: forge-protocol-local
 description: >
-  Step-by-step guide for running Forge Protocol from a local clone — no npm
-  publish needed. Uses tsx to run the CLI directly. For development and testing.
+  Buyer guide for Forge Protocol using the local CLI directly via tsx.
+  No npm publish needed. For local testing only.
 license: MIT
-compatibility: Requires Node.js 20+. Must have the repo cloned locally.
+compatibility: Requires Node.js 20+. Repo must be present locally.
 metadata:
-  version: "1.0"
+  version: "1.1"
   author: forge-protocol
 ---
 
-# Forge Protocol — Local Dev Setup Guide
+# Forge Protocol — Local Buyer Guide
 
-Use this when you have the repo cloned and want to run everything locally
-without publishing the SDK or CLI to npm.
+Use this when testing locally without publishing the SDK to npm.
 
 ---
 
 ## Preflight Check
-
-Before running any command, verify everything is in place:
 
 ```bash
 # 1. Node.js 20+
 node --version
 
 # 2. SDK built
-ls /home/emperorsixpacks/GitHub/bear-protocol_kite/sdk/dist/index.js 2>/dev/null || echo "NOT BUILT — run: cd sdk && npm install && npm run build"
+ls /home/emperorsixpacks/GitHub/bear-protocol_kite/sdk/dist/index.js \
+  2>/dev/null || echo "NOT BUILT — run: cd /home/emperorsixpacks/GitHub/bear-protocol_kite/sdk && npm install && npm run build"
 
 # 3. CLI deps installed
-ls /home/emperorsixpacks/GitHub/bear-protocol_kite/cli/node_modules 2>/dev/null || echo "NOT INSTALLED — run: cd cli && npm install"
+ls /home/emperorsixpacks/GitHub/bear-protocol_kite/cli/node_modules \
+  2>/dev/null || echo "NOT INSTALLED — run: cd /home/emperorsixpacks/GitHub/bear-protocol_kite/cli && npm install"
 
 # 4. Buyer wallet exists
 ls ~/.forge/config.json 2>/dev/null || echo "NOT FOUND — run: forge setup"
-
-# 5. Groq API key set (for seller/validator agents)
-echo ${GROQ_API_KEY:+"set"}
 ```
 
 Fix anything missing before proceeding.
 
 ---
 
-## Step 1 — Install SDK and CLI deps
+## Step 1 — Install deps (first time only)
 
 ```bash
-cd /home/emperorsixpacks/GitHub/bear-protocol_kite
-cd sdk && npm install && npm run build && cd ..
-cd cli && npm install && cd ..
+cd /home/emperorsixpacks/GitHub/bear-protocol_kite/sdk && npm install && npm run build && cd ..
+cd /home/emperorsixpacks/GitHub/bear-protocol_kite/cli && npm install && cd ..
 ```
 
 ---
 
-## Step 2 — Set Up the Local CLI Alias
-
-Add this alias to your shell so you can run `forge` from anywhere:
+## Step 2 — Set Up the CLI Alias
 
 ```bash
 alias forge="npx tsx /home/emperorsixpacks/GitHub/bear-protocol_kite/cli/forge.ts"
 ```
 
-To persist it, add the line above to your `~/.bashrc` or `~/.zshrc`, then reload:
-```bash
-source ~/.bashrc   # or source ~/.zshrc
-```
-
-Verify it works:
-```bash
-forge
-```
+Add to `~/.bashrc` or `~/.zshrc` to persist, then `source` it.
 
 ---
 
-## Step 3 — Set Up Your Buyer Wallet
+## Step 3 — Create Your Wallet
 
 ```bash
 forge setup
 ```
 
-Fund the generated address:
+---
+
+## Step 4 — Fund Your Wallet
+
+Send to the address from Step 3:
 - **ETH (gas)** → https://faucet.gokite.ai
 - **USDT (payments)** → https://faucet.circle.com → select Kite Testnet
 
-Once funded, confirm the wallet is ready:
+Confirm it arrived:
 ```bash
 forge balance
 ```
 
-Expected output when ready:
+Expected when ready:
 ```json
 { "address": "0x...", "eth": "0.5", "usdt": "10.0", "ready": true }
 ```
 
-If `ready` is `false`, wait and run `forge balance` again until it's `true`.
+If `ready` is `false`, wait and run `forge balance` again.
 
 ---
 
-## Step 4 — Run a Seller Agent
+## Step 5 — Discover Agents
 
 ```bash
-cd agents/web-scraper   # or agents/web-analyzer
-npm install
-```
-
-Create `.env` (copy from `.env.example` if present):
-```
-GROQ_API_KEY=<your-groq-api-key>
-SELLER_PRIVATE_KEY=<your-seller-evm-private-key>
-RPC_URL=https://rpc-testnet.gokite.ai/
-SCRAPER_PORT=4503
-```
-
-Generate a wallet if needed:
-```bash
-node --input-type=module <<'EOF'
-import { ethers } from '../sdk/node_modules/ethers/dist/ethers.js';
-const w = ethers.Wallet.createRandom();
-console.log('PRIVATE_KEY:', w.privateKey);
-console.log('ADDRESS:', w.address);
-EOF
-```
-
-Fund the address at https://faucet.gokite.ai, then start:
-```bash
-npm start
-```
-
-Expected output:
-```json
-{"level":"info","agent":"web-scraper","event":"seller_started","port":4503}
-```
-
----
-
-## Step 5 — Run a Validator Agent
-
-```bash
-cd agents/validator
-npm install
-```
-
-Create `.env`:
-```
-GROQ_API_KEY=<your-groq-api-key>
-VALIDATOR_PRIVATE_KEY=<a-different-evm-private-key>
-VALIDATOR_CONSENSUS_CONTRACT=0xDf962b69101B02bE082697Cd0262c9fdc7c57024
-VALIDATOR_PORT=4600
-RPC_URL=https://rpc-testnet.gokite.ai/
-```
-
-Fund the validator address at https://faucet.gokite.ai, then start:
-```bash
-npm start
+forge list
 ```
 
 ---
@@ -164,7 +101,7 @@ forge hire http://localhost:4503 "Scrape https://example.com and return the head
 
 ---
 
-## Step 7 — Check and Retrieve Results
+## Step 7 — Check Status and Get Result
 
 ```bash
 forge status <jobId>
@@ -173,17 +110,20 @@ forge result <jobId>
 
 ---
 
-## All CLI Commands
+## All Commands
 
 ```bash
-forge list
-forge balance                  # check ETH + USDT balance, confirms ready
-forge hire <agentUrl> "<task>"
-forge status <jobId>
-forge result <jobId>
-forge complete <jobId>
-forge cancel <jobId>
+forge setup               # create buyer wallet
+forge balance             # check ETH + USDT balance
+forge list                # discover available agents
+forge hire <url> "<task>" # hire an agent
+forge status <jobId>      # check job state
+forge result <jobId>      # fetch deliverable
+forge complete <jobId>    # manually release payment
+forge cancel <jobId>      # cancel + refund
 ```
+
+---
 
 ## Contracts (Kite Testnet, Chain ID: 2368)
 
@@ -191,7 +131,6 @@ forge cancel <jobId>
 |---|---|
 | Agent Identity | `0x3e0Ad2339f8e88Ff07AF2E515428527a8DF1E96A` |
 | Agentic Commerce | `0xeCee1A2115a5A2c6279Bf88870e658ed813374D0` |
-| Agent Passport | `0xAe325718BdD9F07C402B8544fBbB019FD8b0A36C` |
 | Validator Consensus | `0xDf962b69101B02bE082697Cd0262c9fdc7c57024` |
 
 Explorer: https://testnet.kitescan.ai
