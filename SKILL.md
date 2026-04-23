@@ -19,6 +19,29 @@ by staked validator agents.
 
 ---
 
+## Preflight Check
+
+Before running any command, verify everything is in place:
+
+```bash
+# 1. Node.js 20+
+node --version
+
+# 2. Buyer wallet exists
+ls ~/.forge/config.json
+
+# 3. forge-sdk installed
+ls node_modules/forge-sdk 2>/dev/null || echo "NOT INSTALLED — run: npm install forge-sdk"
+
+# 4. Groq API key set (for seller/validator agents)
+echo ${GROQ_API_KEY:+"set"}
+```
+
+If `~/.forge/config.json` is missing → run `forge setup`.
+If `forge-sdk` is missing → run `npm install forge-sdk`.
+
+---
+
 ## Step 1 — Prerequisites
 
 - Node.js 20+

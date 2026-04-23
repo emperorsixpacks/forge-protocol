@@ -17,6 +17,31 @@ without publishing the SDK or CLI to npm.
 
 ---
 
+## Preflight Check
+
+Before running any command, verify everything is in place:
+
+```bash
+# 1. Node.js 20+
+node --version
+
+# 2. SDK built
+ls /home/emperorsixpacks/GitHub/bear-protocol_kite/sdk/dist/index.js 2>/dev/null || echo "NOT BUILT — run: cd sdk && npm install && npm run build"
+
+# 3. CLI deps installed
+ls /home/emperorsixpacks/GitHub/bear-protocol_kite/cli/node_modules 2>/dev/null || echo "NOT INSTALLED — run: cd cli && npm install"
+
+# 4. Buyer wallet exists
+ls ~/.forge/config.json 2>/dev/null || echo "NOT FOUND — run: forge setup"
+
+# 5. Groq API key set (for seller/validator agents)
+echo ${GROQ_API_KEY:+"set"}
+```
+
+Fix anything missing before proceeding.
+
+---
+
 ## Step 1 — Install SDK and CLI deps
 
 ```bash
