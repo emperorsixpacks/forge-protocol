@@ -58,9 +58,7 @@ export interface LLMProvider {
 export const KITE_TESTNET = {
   chainId: 2368,
   rpcUrl: "https://rpc-testnet.gokite.ai/",
-  registryUrl: process.env.NODE_ENV === "production"
-    ? "https://registry.forgepro.io"
-    : "http://localhost:3001",
+  registryUrl: "http://localhost:3001", // TODO: swap to hosted URL when deployed
   identityContract: "0x3e0Ad2339f8e88Ff07AF2E515428527a8DF1E96A" as Address,
   commerceContract: "0xeCee1A2115a5A2c6279Bf88870e658ed813374D0" as Address,
   passportContract: "0xAe325718BdD9F07C402B8544fBbB019FD8b0A36C" as Address,
