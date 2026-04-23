@@ -20,7 +20,8 @@ Reply with APPROVE or REJECT followed by one sentence explaining why.`;
 
 export interface ValidatorConfig {
   port: number;
-  evaluate: (description: string, deliverable: string) => Promise<boolean | { approve: boolean; reason?: string }>;
+  /** Receive the locked evaluation prompt, return approve + optional reason. */
+  evaluate: (prompt: string) => Promise<boolean | { approve: boolean; reason?: string }>;
   pollIntervalMs?: number;
   stakeAmount?: bigint;
 }
@@ -104,7 +105,8 @@ export async function startValidator(validatorCfg: ValidatorConfig) {
         }
       }
 
-      const result = await validatorCfg.evaluate(job.description, job.deliverable);
+      const prompt = `${DEFAULT_VALIDATOR_PROMPT}\n\nJob description: ${job.description}\n\nDeliverable: ${job.deliverable}`;
+      const result = await validatorCfg.evaluate(prompt);
       const approve = typeof result === "boolean" ? result : result.approve;
       const reason = typeof result === "boolean" ? undefined : result.reason;
 
