@@ -40,6 +40,7 @@ export async function startSeller(sellerCfg: SellerConfig) {
   const cfg: ForgeConfig = {
     signerOrProvider: signer,
     ...KITE_TESTNET,
+    ...(process.env.VALIDATOR_CONSENSUS_CONTRACT && { validatorConsensusContract: process.env.VALIDATOR_CONSENSUS_CONTRACT }),
     onTx: (hash) => log.info("tx", { hash, url: `https://testnet.kitescan.ai/tx/${hash}` }),
   };
 
