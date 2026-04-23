@@ -128,8 +128,13 @@ export async function startSeller(sellerCfg: SellerConfig) {
           log.info("job_submitted_onchain", { jobId, attempt });
           break;
         } catch (e) {
+          const msg = (e as Error).message;
+          if (msg.includes("invalid status")) {
+            log.warn("job_already_submitted", { jobId });
+            break; // already submitted, don't retry
+          }
           if (attempt === 5) throw e;
-          log.warn("job_submit_retry", { jobId, attempt, error: (e as Error).message });
+          log.warn("job_submit_retry", { jobId, attempt, error: msg });
           await new Promise((r) => setTimeout(r, 4000));
         }
       }

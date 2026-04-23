@@ -3,6 +3,7 @@ import type { Job, JobStatus, ForgeConfig } from "./types.js";
 import { ValidatorConsensusClient } from "./validatorConsensus.js";
 
 const ABI = [
+  "event JobCreated(address indexed client, uint64 jobId, uint256 budget)",
   "function createJob(address provider, address evaluator, address token, uint256 budget, string description) returns (uint64)",
   "function submit(uint64 id, string deliverable)",
   "function complete(uint64 id)",
@@ -56,9 +57,10 @@ export class CommerceClient {
     const receipt = await tx.wait();
     this.cfg.onTx?.(receipt.hash, "submit");
 
-    // auto-trigger validator consensus if configured
+    // auto-trigger validator consensus if configured — non-fatal
     if (this.cfg.validatorConsensusContract) {
-      await new ValidatorConsensusClient(this.cfg).requestValidation(jobId);
+      new ValidatorConsensusClient(this.cfg).requestValidation(jobId)
+        .catch((e) => this.cfg.onTx?.("", `requestValidation_failed: ${e.message}`));
     }
   }
 
