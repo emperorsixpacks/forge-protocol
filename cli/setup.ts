@@ -25,7 +25,7 @@ export function saveWallet(wallet: ForgeWallet) {
 }
 
 const ERC20_ABI = ["function balanceOf(address) view returns (uint256)"];
-const MIN_USDT = BigInt(process.env.MIN_USDT_WEI ?? "1000000"); // 1 USDT default
+const MIN_USDT = BigInt(process.env.MIN_USDT_WEI ?? "1000000000000000000"); // 1 USDT (18 decimals)
 
 export async function cmdSetup() {
   if (existsSync(CONFIG_PATH)) {
@@ -58,11 +58,12 @@ export async function cmdBalance() {
   console.log(JSON.stringify({
     address,
     eth: ethers.formatEther(eth),
-    usdt: ethers.formatUnits(usdt_balance as bigint, 6),
+    usdt: ethers.formatUnits(usdt_balance as bigint, 18),
     ready,
     ...(!ready && { next: "Fund your wallet then run: forge balance" }),
   }, null, 2));
 }
+export async function cmdSetupWait() {
   const { address } = loadWallet();
   const provider = new ethers.JsonRpcProvider(process.env.RPC_URL ?? KITE_TESTNET.rpcUrl);
   const usdt = new ethers.Contract(KITE_TESTNET.usdtToken, ERC20_ABI, provider);

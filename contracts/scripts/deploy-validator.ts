@@ -2,7 +2,7 @@ import { ethers, upgrades } from "hardhat";
 
 const USDT     = process.env.USDT_TOKEN        ?? "0x0fF5393387ad2f9f691FD6Fd28e07E3969e27e63";
 const COMMERCE = process.env.COMMERCE_CONTRACT ?? "0xeCee1A2115a5A2c6279Bf88870e658ed813374D0";
-const MIN_STAKE = ethers.parseUnits("1", 6); // 1 USDT
+const MIN_STAKE = ethers.parseUnits("1", 18); // 1 USDT (18 decimals)
 
 async function main() {
   const [deployer] = await ethers.getSigners();
