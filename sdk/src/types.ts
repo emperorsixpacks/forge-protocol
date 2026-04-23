@@ -50,6 +50,10 @@ export interface ForgeConfig {
   onTx?: (hash: string, method: string) => void;
 }
 
+export interface LLMProvider {
+  complete(prompt: string): Promise<string>;
+}
+
 /** Kite Testnet deployment */
 export const KITE_TESTNET = {
   chainId: 2368,

@@ -54,6 +54,7 @@ export async function fetchPage(url: string, maxChars = 3000): Promise<string> {
 // ── PDF generation (HTML → PDF via puppeteer) ─────────────────────────────────
 
 export async function htmlToPdf(html: string): Promise<Buffer> {
+  // @ts-ignore
   const puppeteer = await import("puppeteer").catch(() => null);
   if (!puppeteer) throw new Error("puppeteer not installed — run: npm install puppeteer");
   const browser = await puppeteer.default.launch({ args: ["--no-sandbox"] });

@@ -60,7 +60,7 @@ export async function startValidator(validatorCfg: ValidatorConfig) {
 
       const approve = await validatorCfg.evaluate(job.description, job.deliverable);
 
-      log.info("vote_cast", { jobId: jobId.toString(), vote: approve ? "APPROVE" : "REJECT", answer });
+      log.info("vote_cast", { jobId: jobId.toString(), vote: approve ? "APPROVE" : "REJECT" });
       await consensus.vote(jobId, approve);
     } catch (err) {
       log.error("vote_failed", { jobId: jobId.toString(), error: (err as Error).message });

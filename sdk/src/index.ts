@@ -10,3 +10,4 @@ export { startValidator, type ValidatorConfig } from "./validator.js";
 export { encrypt, decrypt } from "./crypto.js";
 export { createLogger, type LogEvent, type LogLevel } from "./logger.js";
 export { openTunnel } from "./tunnel.js";
+export * from "./tools.js";
