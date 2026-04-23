@@ -1,7 +1,6 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.24;
 
-import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
 import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
 
@@ -16,7 +15,7 @@ interface IAgenticCommerce {
 /// @title ValidatorConsensus — staked validator agents vote on job deliverables.
 ///
 /// Flow:
-///   1. Validators stake USDC via stake().
+///   1. Validators stake native KITE via stake() (payable).
 ///   2. When a job is submitted, the commerce contract's evaluator should be
 ///      set to this contract's address so it can call complete()/reject().
 ///   3. Anyone calls requestValidation(jobId) to open a vote round.
@@ -24,15 +23,12 @@ interface IAgenticCommerce {
 ///   5. Once 2/3 of staked validators have voted, consensus is reached:
 ///      - Majority approve → commerce.complete(jobId)
 ///      - Majority reject  → commerce.reject(jobId)
-///   6. Validators who voted with the majority share the validator fee.
+///   6. Validators who voted with the majority share the native KITE reward pool.
 contract ValidatorConsensus is UUPSUpgradeable, OwnableUpgradeable {
-    using SafeERC20 for IERC20;
-
-    IERC20 public token;
     IAgenticCommerce public commerce;
 
     uint256 public minStake;
-    uint256 public validatorFeeBps; // share of job budget paid to validators (e.g. 50 = 0.5%)
+    uint256 public rewardPool; // native KITE deposited as rewards
 
     // ── Staking ───────────────────────────────────────────────────────────────
 
@@ -49,7 +45,7 @@ contract ValidatorConsensus is UUPSUpgradeable, OwnableUpgradeable {
         uint256 approvals;
         uint256 rejections;
         mapping(address => bool) voted;
-        address[] approvers; // track majority voters for reward split
+        address[] approvers;
     }
 
     mapping(uint64 => Round) private _rounds;
@@ -58,31 +54,27 @@ contract ValidatorConsensus is UUPSUpgradeable, OwnableUpgradeable {
     event Voted(uint64 indexed jobId, address indexed validator, bool approve);
     event ConsensusReached(uint64 indexed jobId, bool approved);
 
-    function initialize(address _token, address _commerce, uint256 _minStake) public initializer {
+    function initialize(address _commerce, uint256 _minStake) public initializer {
         __Ownable_init(msg.sender);
-        token = IERC20(_token);
         commerce = IAgenticCommerce(_commerce);
         minStake = _minStake;
-        validatorFeeBps = 50; // 0.5% of job budget
     }
 
     function _authorizeUpgrade(address) internal override onlyOwner {}
 
-    // ── Staking ───────────────────────────────────────────────────────────────
+    // ── Staking (native KITE) ─────────────────────────────────────────────────
 
-    function stake(uint256 amount) external {
-        require(amount >= minStake, "below min stake");
-        token.safeTransferFrom(msg.sender, address(this), amount);
+    function stake() external payable {
+        require(msg.value >= minStake, "below min stake");
         if (staked[msg.sender] == 0) validatorList.push(msg.sender);
-        staked[msg.sender] += amount;
-        emit Staked(msg.sender, amount);
+        staked[msg.sender] += msg.value;
+        emit Staked(msg.sender, msg.value);
     }
 
     function unstake() external {
         uint256 amount = staked[msg.sender];
         require(amount > 0, "nothing staked");
         staked[msg.sender] = 0;
-        // remove from list
         for (uint256 i = 0; i < validatorList.length; i++) {
             if (validatorList[i] == msg.sender) {
                 validatorList[i] = validatorList[validatorList.length - 1];
@@ -90,12 +82,19 @@ contract ValidatorConsensus is UUPSUpgradeable, OwnableUpgradeable {
                 break;
             }
         }
-        token.safeTransfer(msg.sender, amount);
+        (bool ok,) = msg.sender.call{value: amount}("");
+        require(ok, "transfer failed");
         emit Unstaked(msg.sender, amount);
     }
 
     function validatorCount() external view returns (uint256) {
         return validatorList.length;
+    }
+
+    // ── Rewards (native KITE) ─────────────────────────────────────────────────
+
+    function depositRewards() external payable {
+        rewardPool += msg.value;
     }
 
     // ── Voting ────────────────────────────────────────────────────────────────
@@ -128,12 +127,12 @@ contract ValidatorConsensus is UUPSUpgradeable, OwnableUpgradeable {
     function _checkConsensus(uint64 jobId) internal {
         Round storage r = _rounds[jobId];
         uint256 total = validatorList.length;
-        uint256 threshold = (total * 2) / 3 + 1; // 2/3 majority
+        uint256 threshold = (total * 2) / 3 + 1;
 
         if (r.approvals >= threshold) {
             r.open = false;
             emit ConsensusReached(jobId, true);
-            _distributeReward(jobId, r.approvers);
+            _distributeReward(r.approvers);
             commerce.complete(jobId);
         } else if (r.rejections >= threshold) {
             r.open = false;
@@ -142,27 +141,14 @@ contract ValidatorConsensus is UUPSUpgradeable, OwnableUpgradeable {
         }
     }
 
-    /// @dev Pays majority voters from the job budget via a small fee.
-    ///      Requires the commerce contract to have approved this contract to pull funds,
-    ///      OR we simply transfer from this contract's balance if pre-funded.
-    ///      For simplicity: validators are rewarded from a pre-deposited reward pool.
-    function _distributeReward(uint64, address[] storage approvers) internal {
-        if (approvers.length == 0 || address(token) == address(0)) return;
-        uint256 pool = token.balanceOf(address(this));
-        // subtract staked amounts to only use reward pool
-        uint256 totalStakedHere = 0;
-        for (uint256 i = 0; i < validatorList.length; i++) totalStakedHere += staked[validatorList[i]];
-        uint256 rewardPool = pool > totalStakedHere ? pool - totalStakedHere : 0;
-        if (rewardPool == 0) return;
-
+    function _distributeReward(address[] storage approvers) internal {
+        if (approvers.length == 0 || rewardPool == 0) return;
         uint256 share = rewardPool / approvers.length;
+        rewardPool = 0;
         for (uint256 i = 0; i < approvers.length; i++) {
-            token.safeTransfer(approvers[i], share);
+            (bool ok,) = approvers[i].call{value: share}("");
+            if (!ok) rewardPool += share; // refund on failure
         }
-    }
-
-    function depositRewards(uint256 amount) external {
-        token.safeTransferFrom(msg.sender, address(this), amount);
     }
 
     // ── View ──────────────────────────────────────────────────────────────────
@@ -180,4 +166,6 @@ contract ValidatorConsensus is UUPSUpgradeable, OwnableUpgradeable {
 
     function setMinStake(uint256 _minStake) external onlyOwner { minStake = _minStake; }
     function setCommerce(address _commerce) external onlyOwner { commerce = IAgenticCommerce(_commerce); }
+
+    receive() external payable { rewardPool += msg.value; }
 }

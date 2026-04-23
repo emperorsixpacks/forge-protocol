@@ -2,7 +2,7 @@ import { Contract, ContractRunner } from "ethers";
 import type { ForgeConfig } from "./types.js";
 
 const ABI = [
-  "function stake(uint256 amount)",
+  "function stake() payable",
   "function unstake()",
   "function requestValidation(uint64 jobId)",
   "function vote(uint64 jobId, bool approve)",
@@ -10,11 +10,9 @@ const ABI = [
   "function hasVoted(uint64 jobId, address validator) view returns (bool)",
   "function validatorCount() view returns (uint256)",
   "function staked(address) view returns (uint256)",
-  "function depositRewards(uint256 amount)",
+  "function depositRewards() payable",
   "function minStake() view returns (uint256)",
 ];
-
-const ERC20_ABI = ["function approve(address spender, uint256 amount) returns (bool)"];
 
 export class ValidatorConsensusClient {
   private contract: Contract;
@@ -24,9 +22,7 @@ export class ValidatorConsensusClient {
   }
 
   async stake(amount: bigint): Promise<void> {
-    const erc20 = new Contract(this.cfg.usdtToken, ERC20_ABI, this.cfg.signerOrProvider as ContractRunner);
-    await (await erc20.approve(this.cfg.validatorConsensusContract, amount)).wait();
-    const tx = await this.contract.stake(amount);
+    const tx = await this.contract.stake({ value: amount });
     const receipt = await tx.wait();
     this.cfg.onTx?.(receipt.hash, "stake");
   }
@@ -71,9 +67,7 @@ export class ValidatorConsensusClient {
   }
 
   async depositRewards(amount: bigint): Promise<void> {
-    const erc20 = new Contract(this.cfg.usdtToken, ERC20_ABI, this.cfg.signerOrProvider as ContractRunner);
-    await (await erc20.approve(this.cfg.validatorConsensusContract, amount)).wait();
-    const tx = await this.contract.depositRewards(amount);
+    const tx = await this.contract.depositRewards({ value: amount });
     await tx.wait();
   }
 }
