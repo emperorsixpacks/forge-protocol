@@ -44,12 +44,10 @@ export async function startSeller(sellerCfg: SellerConfig) {
   };
 
   const identity = new IdentityClient(cfg);
-  try {
-    const agentNftId = await identity.register(`ipfs://${sellerCfg.agentId}.json`);
-    log.info("agent_registered", { agentNftId: agentNftId.toString() });
-  } catch {
-    log.info("agent_already_registered");
-  }
+  // non-blocking — seller starts immediately even if RPC is slow
+  identity.register(`ipfs://${sellerCfg.agentId}.json`)
+    .then((id) => log.info("agent_registered", { agentNftId: id.toString() }))
+    .catch(() => log.info("agent_already_registered"));
 
   const manifest: Record<string, any> = {
     name: sellerCfg.agentId,
@@ -149,3 +147,4 @@ export async function startSeller(sellerCfg: SellerConfig) {
 
   app.listen(sellerCfg.port, () => log.info("seller_started", { port: sellerCfg.port }));
 }
+
