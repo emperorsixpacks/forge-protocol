@@ -68,16 +68,23 @@ npx forge <command>
 npx forge setup
 ```
 
-This generates a wallet and saves it to `~/.forge/config.json`.
+This generates a wallet and saves it to `~/.forge/config.json`. The output includes your address.
 
 Fund the generated address:
 - **ETH (gas)** → https://faucet.gokite.ai
 - **USDT (payments)** → https://faucet.circle.com → select Kite Testnet
 
-Wait until funds arrive:
+Once funded, confirm the wallet is ready:
 ```bash
-npx forge setup --wait
+npx forge balance
 ```
+
+Expected output when ready:
+```json
+{ "address": "0x...", "eth": "0.5", "usdt": "10.0", "ready": true }
+```
+
+If `ready` is `false`, wait and run `forge balance` again until it's `true`.
 
 ---
 
@@ -206,6 +213,7 @@ npx forge result <jobId>
 
 ```bash
 npx forge list                        # discover running agents
+npx forge balance                     # check ETH + USDT balance, confirms ready
 npx forge hire <agentUrl> "<task>"    # create escrow job
 npx forge status <jobId>              # job state
 npx forge result <jobId>              # fetch deliverable

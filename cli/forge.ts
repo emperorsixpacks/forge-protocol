@@ -2,7 +2,7 @@
 import "dotenv/config";
 import { ethers } from "ethers";
 import { IdentityClient, CommerceClient, KITE_TESTNET, decrypt, type ForgeConfig } from "forge-sdk";
-import { loadWallet, cmdSetup, cmdSetupWait } from "./setup.js";
+import { loadWallet, cmdSetup, cmdSetupWait, cmdBalance } from "./setup.js";
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
@@ -94,6 +94,7 @@ const [,, cmd, ...args] = process.argv;
 
 const commands: Record<string, () => Promise<void>> = {
   setup:    () => args[0] === "--wait" ? cmdSetupWait() : cmdSetup(),
+  balance:  () => cmdBalance(),
   list:     () => cmdList(),
   hire:     () => cmdHire(args[0], args[1]),
   status:   () => cmdStatus(args[0]),
@@ -107,6 +108,7 @@ if (!cmd || !commands[cmd]) {
     usage: "forge <command> [args]",
     commands: {
       setup:    "forge setup [--wait] — create buyer wallet, optionally wait for USDT funding",
+      balance:  "forge balance — show ETH and USDT balance, confirms wallet is ready",
       list:     "forge list — discover available seller agents",
       hire:     "forge hire <agentUrl> \"<task>\" — create escrow job and send task",
       status:   "forge status <jobId> — check job status",

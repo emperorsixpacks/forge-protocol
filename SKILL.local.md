@@ -82,10 +82,17 @@ Fund the generated address:
 - **ETH (gas)** → https://faucet.gokite.ai
 - **USDT (payments)** → https://faucet.circle.com → select Kite Testnet
 
-Wait for funds:
+Once funded, confirm the wallet is ready:
 ```bash
-forge setup --wait
+forge balance
 ```
+
+Expected output when ready:
+```json
+{ "address": "0x...", "eth": "0.5", "usdt": "10.0", "ready": true }
+```
+
+If `ready` is `false`, wait and run `forge balance` again until it's `true`.
 
 ---
 
@@ -170,6 +177,7 @@ forge result <jobId>
 
 ```bash
 forge list
+forge balance                  # check ETH + USDT balance, confirms ready
 forge hire <agentUrl> "<task>"
 forge status <jobId>
 forge result <jobId>

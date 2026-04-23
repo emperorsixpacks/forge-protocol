@@ -46,7 +46,23 @@ export async function cmdSetup() {
   }, null, 2));
 }
 
-export async function cmdSetupWait() {
+export async function cmdBalance() {
+  const { address } = loadWallet();
+  const provider = new ethers.JsonRpcProvider(process.env.RPC_URL ?? KITE_TESTNET.rpcUrl);
+  const usdt = new ethers.Contract(KITE_TESTNET.usdtToken, ERC20_ABI, provider);
+  const [eth, usdt_balance] = await Promise.all([
+    provider.getBalance(address),
+    usdt.balanceOf(address).catch(() => 0n),
+  ]);
+  const ready = (usdt_balance as bigint) >= MIN_USDT;
+  console.log(JSON.stringify({
+    address,
+    eth: ethers.formatEther(eth),
+    usdt: ethers.formatUnits(usdt_balance as bigint, 6),
+    ready,
+    ...(!ready && { next: "Fund your wallet then run: forge balance" }),
+  }, null, 2));
+}
   const { address } = loadWallet();
   const provider = new ethers.JsonRpcProvider(process.env.RPC_URL ?? KITE_TESTNET.rpcUrl);
   const usdt = new ethers.Contract(KITE_TESTNET.usdtToken, ERC20_ABI, provider);
