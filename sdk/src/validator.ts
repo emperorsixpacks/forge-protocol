@@ -30,23 +30,25 @@ export async function startValidator(validatorCfg: ValidatorConfig) {
 
   // ── Poll for open validation rounds ──────────────────────────────────────
 
-  // Track highest jobId we've seen so we can scan forward
-  let lastCheckedJobId = BigInt(process.env.START_JOB_ID ?? "1");
+  let startJobId = BigInt(process.env.START_JOB_ID ?? "1");
 
   async function pollAndVote() {
-    try {
-      const alreadyVoted = await consensus.hasVoted(lastCheckedJobId, signer.address);
-      if (!alreadyVoted) {
-        const { open } = await consensus.roundStatus(lastCheckedJobId);
-        if (open) {
-          await evaluateAndVote(lastCheckedJobId);
+    let jobId = startJobId;
+    while (true) {
+      try {
+        const job = await commerce.getJob(jobId);
+        if (!job) break;
+        const alreadyVoted = await consensus.hasVoted(jobId, signer.address);
+        if (!alreadyVoted) {
+          const { open } = await consensus.roundStatus(jobId);
+          if (open) await evaluateAndVote(jobId);
         }
+        jobId++;
+      } catch {
+        break; // no more jobs
       }
-      // advance to next job
-      lastCheckedJobId++;
-    } catch {
-      // job doesn't exist yet — stay at current id
     }
+    startJobId = jobId; // next poll starts here
   }
 
   async function evaluateAndVote(jobId: bigint) {
