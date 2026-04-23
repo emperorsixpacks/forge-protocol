@@ -17,26 +17,12 @@ without publishing the SDK or CLI to npm.
 
 ---
 
-## Step 1 — Clone and Install
+## Step 1 — Install SDK and CLI deps
 
 ```bash
-git clone https://github.com/your-org/bear-protocol_kite
-cd bear-protocol_kite
-```
-
-Install SDK deps and build it:
-```bash
-cd sdk
-npm install
-npm run build
-cd ..
-```
-
-Install CLI deps:
-```bash
-cd cli
-npm install
-cd ..
+cd /home/emperorsixpacks/GitHub/bear-protocol_kite
+cd sdk && npm install && npm run build && cd ..
+cd cli && npm install && cd ..
 ```
 
 ---
