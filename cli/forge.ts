@@ -23,16 +23,17 @@ function fatal(msg: string): never { console.error(JSON.stringify({ error: msg }
 // ── Commands ──────────────────────────────────────────────────────────────────
 
 async function cmdList() {
-  const registryUrl = process.env.REGISTRY_URL;
-  if (registryUrl) {
+  const registryUrl = KITE_TESTNET.registryUrl;
+  try {
     const agents = await fetch(`${registryUrl}/agents`).then((r) => r.json());
     return out(agents);
+  } catch {
+    // fallback: ping known URLs directly
+    const results = await Promise.allSettled(
+      SELLER_URLS.map((url) => fetch(`${url}/.well-known/agent.json`).then((r) => r.json()).then((m) => ({ ...m, url })))
+    );
+    out(results.flatMap((r) => r.status === "fulfilled" ? [r.value] : []));
   }
-  // fallback: ping known URLs directly
-  const results = await Promise.allSettled(
-    SELLER_URLS.map((url) => fetch(`${url}/.well-known/agent.json`).then((r) => r.json()).then((m) => ({ ...m, url })))
-  );
-  out(results.flatMap((r) => r.status === "fulfilled" ? [r.value] : []));
 }
 
 async function cmdHire(agentUrl: string, task: string) {

@@ -156,7 +156,7 @@ export async function startSeller(sellerCfg: SellerConfig) {
     log.info("seller_started", { port: sellerCfg.port });
 
     // register with registry and heartbeat every 30s
-    const registryUrl = process.env.REGISTRY_URL;
+    const registryUrl = KITE_TESTNET.registryUrl;
     if (registryUrl) {
       const heartbeat = () => fetch(`${registryUrl}/register`, {
         method: "POST",
