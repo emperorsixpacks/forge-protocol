@@ -29,6 +29,7 @@ export interface ValidatorConfig {
 export async function startValidator(validatorCfg: ValidatorConfig) {
   const log = createLogger("validator");
   const provider = new ethers.JsonRpcProvider(process.env.RPC_URL ?? KITE_TESTNET.rpcUrl);
+  provider.on("error", () => {}); // suppress network detection noise
   const signer = new ethers.Wallet(process.env.VALIDATOR_PRIVATE_KEY!, provider);
 
   const cfg: ForgeConfig = {

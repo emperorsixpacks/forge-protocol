@@ -35,6 +35,7 @@ export async function startSeller(sellerCfg: SellerConfig) {
   const log = createLogger(sellerCfg.agentId);
 
   const provider = new ethers.JsonRpcProvider(process.env.RPC_URL ?? KITE_TESTNET.rpcUrl);
+  provider.on("error", () => {}); // suppress network detection noise
   const signer = new ethers.Wallet(process.env.SELLER_PRIVATE_KEY!, provider);
 
   const cfg: ForgeConfig = {
