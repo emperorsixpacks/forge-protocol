@@ -17,7 +17,7 @@ Reply with exactly one word: APPROVE or REJECT`,
 startValidator({
   port: Number(process.env.VALIDATOR_PORT ?? 4600),
   pollIntervalMs: Number(process.env.POLL_INTERVAL_MS ?? 10_000),
-  stakeAmount: BigInt(process.env.STAKE_AMOUNT_WEI ?? "1000000000000"), // auto-stake on startup
+  stakeAmount: BigInt(process.env.STAKE_AMOUNT_WEI ?? "1000000000000000"), // 0.001 KITE — matches contract minStake
   evaluate: async (description, deliverable) => {
     const { text } = await agent.generate([{
       role: "user",
