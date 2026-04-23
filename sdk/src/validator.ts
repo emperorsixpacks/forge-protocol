@@ -33,13 +33,23 @@ export async function startValidator(validatorCfg: ValidatorConfig) {
   if (validatorCfg.stakeAmount) {
     consensus.stakedAmount(signer.address).then(async (current: bigint) => {
       if (current === 0n) {
-        log.info("auto_staking", { amount: validatorCfg.stakeAmount!.toString() });
+        log.info("auto_staking", { amount: validatorCfg.stakeAmount!.toString(), address: signer.address });
         await consensus.stake(validatorCfg.stakeAmount!);
         log.info("staked", { amount: validatorCfg.stakeAmount!.toString() });
       } else {
         log.info("already_staked", { amount: current.toString() });
       }
-    }).catch((e: Error) => log.warn("auto_stake_failed", { error: e.message }));
+    }).catch((e: Error) => {
+      if (e.message.includes("insufficient funds") || e.message.includes("INSUFFICIENT_FUNDS")) {
+        log.error("insufficient_funds", {
+          message: `Validator wallet has no KITE. Fund ${signer.address} at https://faucet.gokite.ai then restart.`,
+          address: signer.address,
+          faucet: "https://faucet.gokite.ai",
+        });
+      } else {
+        log.warn("auto_stake_failed", { error: e.message });
+      }
+    });
   }
 
   // ── Poll for open validation rounds ──────────────────────────────────────
