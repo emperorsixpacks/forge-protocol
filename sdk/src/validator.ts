@@ -9,9 +9,8 @@ import type { ForgeConfig } from "./types.js";
 
 export interface ValidatorConfig {
   port: number;
-  evaluate: (description: string, deliverable: string) => Promise<boolean>;
+  evaluate: (description: string, deliverable: string) => Promise<boolean | { approve: boolean; reason?: string }>;
   pollIntervalMs?: number;
-  /** If set, auto-stake this amount on startup if not already staked */
   stakeAmount?: bigint;
 }
 
@@ -94,9 +93,11 @@ export async function startValidator(validatorCfg: ValidatorConfig) {
         }
       }
 
-      const approve = await validatorCfg.evaluate(job.description, job.deliverable);
+      const result = await validatorCfg.evaluate(job.description, job.deliverable);
+      const approve = typeof result === "boolean" ? result : result.approve;
+      const reason = typeof result === "boolean" ? undefined : result.reason;
 
-      log.info("vote_cast", { jobId: jobId.toString(), vote: approve ? "APPROVE" : "REJECT" });
+      log.info("vote_cast", { jobId: jobId.toString(), vote: approve ? "APPROVE" : "REJECT", ...(reason && { reason }) });
       await consensus.vote(jobId, approve);
     } catch (err) {
       log.error("vote_failed", { jobId: jobId.toString(), error: (err as Error).message });

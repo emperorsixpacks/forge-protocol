@@ -21,8 +21,9 @@ startValidator({
   evaluate: async (description, deliverable) => {
     const { text } = await agent.generate([{
       role: "user",
-      content: `Job description: ${description}\n\nDeliverable: ${deliverable}`,
+      content: `Job description: ${description}\n\nDeliverable: ${deliverable}\n\nReply APPROVE or REJECT followed by a one-sentence reason.`,
     }]);
-    return text.trim().toUpperCase().startsWith("APPROVE");
+    const approve = text.trim().toUpperCase().startsWith("APPROVE");
+    return { approve, reason: text.trim() };
   },
 });
