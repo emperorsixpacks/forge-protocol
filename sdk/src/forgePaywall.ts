@@ -16,7 +16,7 @@ export interface ForgePaywallOptions {
 
 export function forgePaywall(opts: ForgePaywallOptions): RequestHandler {
   const { payTo, price, description = "Forge API call", merchantName = "Forge Agent" } = opts;
-  const maxAmountRequired = String(Math.round(parseFloat(price) * 1_000_000));
+  const maxAmountRequired = ethers.parseUnits(price, 18).toString();
 
   return async (req, res, next) => {
     const paymentHeader = req.headers["x-payment"] as string | undefined;
