@@ -18,6 +18,8 @@ const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 app.use(express.json());
 app.use("/app", express.static(path.join(__dirname, "public")));
+app.use("/landing", express.static(path.join(__dirname, "public", "landing")));
+app.get("/", (_req, res) => res.sendFile(path.join(__dirname, "public", "landing", "index.html")));
 
 // Serialize bigint → string for JSON
 function serial(v: unknown): unknown {
