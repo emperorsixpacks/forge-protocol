@@ -8,7 +8,7 @@
     "start": "tsx server.ts"
   },
   "dependencies": {
-    "@stellar/stellar-sdk": "^14.6.1",
+    "ethers": "^6.13.0",
     "express": "^4.21.0",
     "forge-sdk": "file:../sdk",
     "dotenv": "^16.4.0"
