@@ -46,6 +46,7 @@ contract ValidatorConsensus is UUPSUpgradeable, OwnableUpgradeable {
         uint256 rejections;
         mapping(address => bool) voted;
         address[] approvers;
+        address[] rejectors;
     }
 
     mapping(uint64 => Round) private _rounds;
@@ -118,6 +119,7 @@ contract ValidatorConsensus is UUPSUpgradeable, OwnableUpgradeable {
             r.approvers.push(msg.sender);
         } else {
             r.rejections++;
+            r.rejectors.push(msg.sender);
         }
 
         emit Voted(jobId, msg.sender, approve);
@@ -137,6 +139,7 @@ contract ValidatorConsensus is UUPSUpgradeable, OwnableUpgradeable {
         } else if (r.rejections >= threshold) {
             r.open = false;
             emit ConsensusReached(jobId, false);
+            _distributeReward(r.rejectors);
             commerce.reject(jobId);
         }
     }

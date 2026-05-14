@@ -2,10 +2,14 @@
   "name": "forge-registry",
   "version": "1.0.0",
   "type": "module",
-  "scripts": { "start": "tsx index.ts" },
+  "scripts": {
+    "start": "tsx index.ts"
+  },
   "dependencies": {
+    "@types/ws": "^8.18.1",
+    "dotenv": "^16.4.5",
     "express": "^4.19.0",
-    "dotenv": "^16.4.5"
+    "ws": "^8.20.0"
   },
   "devDependencies": {
     "@types/express": "^4.17.21",

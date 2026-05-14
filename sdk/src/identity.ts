@@ -18,6 +18,7 @@ const ABI = [
   "function validationRequest(address validator, uint256 agentId, string requestURI, bytes32 requestHash)",
   "function validationResponse(bytes32 requestHash, uint8 response, string responseURI, bytes32 responseHash, string tag)",
   "function getValidationStatus(bytes32 requestHash) view returns (address validator, uint256 agentId, uint8 response, bytes32 responseHash, string tag, uint256 lastUpdate)",
+  "event AgentRegistered(address indexed owner, uint256 agentId, string agentURI)",
 ];
 
 export class IdentityClient {
@@ -76,6 +77,15 @@ export class IdentityClient {
   async getSummary(agentId: bigint): Promise<{ count: bigint; total: bigint }> {
     const [count, total] = await this.contract.getSummary(agentId);
     return { count, total };
+  }
+
+  /** Find the agentId NFT minted by a given owner address by querying AgentRegistered events. */
+  async getAgentIdByOwner(owner: string): Promise<bigint | null> {
+    const filter = this.contract.filters.AgentRegistered(owner);
+    const events = await this.contract.queryFilter(filter, 0, "latest");
+    if (events.length === 0) return null;
+    const last = events[events.length - 1] as any;
+    return last.args.agentId as bigint;
   }
 
   async validationRequest(validator: string, agentId: bigint, requestURI: string, requestHash: string): Promise<void> {

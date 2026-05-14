@@ -2,6 +2,7 @@ import express from "express";
 import { ethers } from "ethers";
 import { ValidatorConsensusClient } from "./validatorConsensus.js";
 import { CommerceClient } from "./commerce.js";
+import { IdentityClient } from "./identity.js";
 import { KITE_TESTNET } from "./types.js";
 import { createLogger } from "./logger.js";
 import { openTunnel } from "./tunnel.js";
@@ -40,6 +41,19 @@ export async function startValidator(validatorCfg: ValidatorConfig) {
 
   const consensus = new ValidatorConsensusClient(cfg);
   const commerce = new CommerceClient(cfg);
+  const identity = new IdentityClient(cfg);
+
+  /** Resolve seller wallet → agentNftId via registry. Returns null if not found. */
+  async function resolveAgentNftId(wallet: string): Promise<bigint | null> {
+    const registryUrl = KITE_TESTNET.registryUrl;
+    if (!registryUrl) return null;
+    try {
+      const res = await fetch(`${registryUrl}/agents/by-wallet/${wallet}`);
+      if (!res.ok) return null;
+      const { agentNftId } = await res.json() as { agentNftId: string | null };
+      return agentNftId ? BigInt(agentNftId) : null;
+    } catch { return null; }
+  }
 
   // auto-stake if configured and not already staked — retry until RPC is ready
   if (validatorCfg.stakeAmount) {
@@ -85,17 +99,19 @@ export async function startValidator(validatorCfg: ValidatorConfig) {
       try {
         const job = await commerce.getJob(jobId);
         if (!job) break;
-        const alreadyVoted = await consensus.hasVoted(jobId, signer.address);
-        if (!alreadyVoted) {
-          const { open } = await consensus.roundStatus(jobId);
-          if (open) await evaluateAndVote(jobId);
+        // evaluate any Submitted job we haven't voted on yet
+        // evaluateAndVote handles opening the round if needed
+        if (job.status === 1 /* Submitted */) {
+          const alreadyVoted = await consensus.hasVoted(jobId, signer.address);
+          if (!alreadyVoted) await evaluateAndVote(jobId);
         }
         jobId++;
       } catch {
-        break; // no more jobs
+        break; // no more jobs — stop scanning
       }
     }
-    startJobId = jobId; // next poll starts here
+    // only advance startJobId up to the last seen job, not past it
+    if (jobId > startJobId) startJobId = jobId - 1n;
   }
 
   async function evaluateAndVote(jobId: bigint) {
@@ -124,6 +140,24 @@ export async function startValidator(validatorCfg: ValidatorConfig) {
 
       log.info("vote_cast", { jobId: jobId.toString(), vote: approve ? "APPROVE" : "REJECT", ...(reason && { reason }) });
       await consensus.vote(jobId, approve);
+
+      // write reputation feedback to AgentIdentity
+      const agentNftId = await resolveAgentNftId(job.provider);
+      if (agentNftId) {
+        try {
+          await identity.giveFeedback(
+            agentNftId,
+            approve ? 1n : -1n,
+            0,
+            approve ? "approve" : "reject",
+            `job:${jobId}`,
+            "",
+          );
+          log.info("feedback_written", { agentNftId: agentNftId.toString(), approve });
+        } catch (e) {
+          log.warn("feedback_failed", { error: (e as Error).message });
+        }
+      }
     } catch (err) {
       log.error("vote_failed", { jobId: jobId.toString(), error: (err as Error).message });
     }
@@ -132,6 +166,25 @@ export async function startValidator(validatorCfg: ValidatorConfig) {
   const interval = validatorCfg.pollIntervalMs ?? 10_000;
   setInterval(pollAndVote, interval);
   log.info("validator_polling", { interval, address: signer.address });
+
+  // ── WebSocket subscription to registry for instant job notifications ──────
+  const registryUrl = KITE_TESTNET.registryUrl;
+  if (registryUrl) {
+    const wsUrl = registryUrl.replace(/^http/, "ws");
+    const connectWs = () => {
+      const ws = new WebSocket(wsUrl);
+      ws.onmessage = (event) => {
+        try {
+          const { jobId } = JSON.parse(event.data as string);
+          if (jobId) evaluateAndVote(BigInt(jobId));
+        } catch {}
+      };
+      ws.onclose = () => setTimeout(connectWs, 5_000); // reconnect on drop
+      ws.onerror = () => {}; // onclose will fire after error and handle reconnect
+    };
+    connectWs();
+    log.info("registry_ws_subscribed", { url: wsUrl });
+  }
 
   // ── HTTP server — manual trigger + status ─────────────────────────────────
 

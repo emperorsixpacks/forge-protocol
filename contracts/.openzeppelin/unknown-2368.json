@@ -35,6 +35,16 @@
       "address": "0x7253d16B0954520a20EA406dd04419Ca53e723F9",
       "txHash": "0xe28808fec416f6cced3ef0d670bee44ebf37aa87fabac518067283726a38b1a7",
       "kind": "uups"
+    },
+    {
+      "address": "0xF318Cbe408b935F8E1Cc3829CfDd5a0C3896bF42",
+      "txHash": "0x56c13de988fe7c6b5919eec728b50765e93a7529a1435c885a7134c684f79244",
+      "kind": "uups"
+    },
+    {
+      "address": "0x7D798A62e4BE23Cb2a2aCA436A4eE5310c07143c",
+      "txHash": "0xc0386069c4ed3a7ca153c1402ed049a7bd2ff6a633b381811aa6b8268394e824",
+      "kind": "uups"
     }
   ],
   "impls": {
@@ -1214,6 +1224,203 @@
               }
             ],
             "numberOfBytes": "160"
+          },
+          "t_uint256": {
+            "label": "uint256",
+            "numberOfBytes": "32"
+          }
+        },
+        "namespaces": {
+          "erc7201:openzeppelin.storage.Ownable": [
+            {
+              "contract": "OwnableUpgradeable",
+              "label": "_owner",
+              "type": "t_address",
+              "src": "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol:24",
+              "offset": 0,
+              "slot": "0"
+            }
+          ],
+          "erc7201:openzeppelin.storage.Initializable": [
+            {
+              "contract": "Initializable",
+              "label": "_initialized",
+              "type": "t_uint64",
+              "src": "@openzeppelin/contracts/proxy/utils/Initializable.sol:69",
+              "offset": 0,
+              "slot": "0"
+            },
+            {
+              "contract": "Initializable",
+              "label": "_initializing",
+              "type": "t_bool",
+              "src": "@openzeppelin/contracts/proxy/utils/Initializable.sol:73",
+              "offset": 8,
+              "slot": "0"
+            }
+          ]
+        }
+      }
+    },
+    "cad62c8f971c4931b59a07540e13363141fa187550a487ad51a5215f237a20d5": {
+      "address": "0x80CBcb50672B1A95b064AD30E3239f5fBAb42995",
+      "txHash": "0xdacc1a181e3691214e25403d883b2de056f0c4879d7e80c9829f48b710549923",
+      "layout": {
+        "solcVersion": "0.8.24",
+        "storage": [
+          {
+            "label": "commerce",
+            "offset": 0,
+            "slot": "0",
+            "type": "t_contract(IAgenticCommerce)11638",
+            "contract": "ValidatorConsensus",
+            "src": "src/ValidatorConsensus.sol:28"
+          },
+          {
+            "label": "minStake",
+            "offset": 0,
+            "slot": "1",
+            "type": "t_uint256",
+            "contract": "ValidatorConsensus",
+            "src": "src/ValidatorConsensus.sol:30"
+          },
+          {
+            "label": "rewardPool",
+            "offset": 0,
+            "slot": "2",
+            "type": "t_uint256",
+            "contract": "ValidatorConsensus",
+            "src": "src/ValidatorConsensus.sol:31"
+          },
+          {
+            "label": "validatorList",
+            "offset": 0,
+            "slot": "3",
+            "type": "t_array(t_address)dyn_storage",
+            "contract": "ValidatorConsensus",
+            "src": "src/ValidatorConsensus.sol:38"
+          },
+          {
+            "label": "staked",
+            "offset": 0,
+            "slot": "4",
+            "type": "t_mapping(t_address,t_uint256)",
+            "contract": "ValidatorConsensus",
+            "src": "src/ValidatorConsensus.sol:39"
+          },
+          {
+            "label": "_rounds",
+            "offset": 0,
+            "slot": "5",
+            "type": "t_mapping(t_uint64,t_struct(Round)11686_storage)",
+            "contract": "ValidatorConsensus",
+            "src": "src/ValidatorConsensus.sol:58"
+          }
+        ],
+        "types": {
+          "t_address": {
+            "label": "address",
+            "numberOfBytes": "20"
+          },
+          "t_bool": {
+            "label": "bool",
+            "numberOfBytes": "1"
+          },
+          "t_struct(InitializableStorage)809_storage": {
+            "label": "struct Initializable.InitializableStorage",
+            "members": [
+              {
+                "label": "_initialized",
+                "type": "t_uint64",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "_initializing",
+                "type": "t_bool",
+                "offset": 8,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_struct(OwnableStorage)13_storage": {
+            "label": "struct OwnableUpgradeable.OwnableStorage",
+            "members": [
+              {
+                "label": "_owner",
+                "type": "t_address",
+                "offset": 0,
+                "slot": "0"
+              }
+            ],
+            "numberOfBytes": "32"
+          },
+          "t_uint64": {
+            "label": "uint64",
+            "numberOfBytes": "8"
+          },
+          "t_array(t_address)dyn_storage": {
+            "label": "address[]",
+            "numberOfBytes": "32"
+          },
+          "t_contract(IAgenticCommerce)11638": {
+            "label": "contract IAgenticCommerce",
+            "numberOfBytes": "20"
+          },
+          "t_mapping(t_address,t_bool)": {
+            "label": "mapping(address => bool)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_address,t_uint256)": {
+            "label": "mapping(address => uint256)",
+            "numberOfBytes": "32"
+          },
+          "t_mapping(t_uint64,t_struct(Round)11686_storage)": {
+            "label": "mapping(uint64 => struct ValidatorConsensus.Round)",
+            "numberOfBytes": "32"
+          },
+          "t_struct(Round)11686_storage": {
+            "label": "struct ValidatorConsensus.Round",
+            "members": [
+              {
+                "label": "open",
+                "type": "t_bool",
+                "offset": 0,
+                "slot": "0"
+              },
+              {
+                "label": "approvals",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "1"
+              },
+              {
+                "label": "rejections",
+                "type": "t_uint256",
+                "offset": 0,
+                "slot": "2"
+              },
+              {
+                "label": "voted",
+                "type": "t_mapping(t_address,t_bool)",
+                "offset": 0,
+                "slot": "3"
+              },
+              {
+                "label": "approvers",
+                "type": "t_array(t_address)dyn_storage",
+                "offset": 0,
+                "slot": "4"
+              },
+              {
+                "label": "rejectors",
+                "type": "t_array(t_address)dyn_storage",
+                "offset": 0,
+                "slot": "5"
+              }
+            ],
+            "numberOfBytes": "192"
           },
           "t_uint256": {
             "label": "uint256",

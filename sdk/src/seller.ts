@@ -46,10 +46,16 @@ export async function startSeller(sellerCfg: SellerConfig) {
   };
 
   const identity = new IdentityClient(cfg);
+  let agentNftId: string | undefined;
   // non-blocking — seller starts immediately even if RPC is slow
   identity.register(`ipfs://${sellerCfg.agentId}.json`)
-    .then((id) => log.info("agent_registered", { agentNftId: id.toString() }))
-    .catch(() => log.info("agent_already_registered"));
+    .then((id) => { agentNftId = id.toString(); log.info("agent_registered", { agentNftId }); })
+    .catch(() => {
+      // already registered — recover agentNftId from event logs
+      identity.getAgentIdByOwner(signer.address)
+        .then((id) => { if (id) { agentNftId = id.toString(); log.info("agent_nft_id_recovered", { agentNftId }); } })
+        .catch(() => {});
+    });
 
   const manifest: Record<string, any> = {
     name: sellerCfg.agentId,
@@ -140,6 +146,16 @@ export async function startSeller(sellerCfg: SellerConfig) {
         }
       }
 
+      // ping registry so validators are notified immediately
+      const registryUrl = KITE_TESTNET.registryUrl;
+      if (registryUrl) {
+        fetch(`${registryUrl}/notify`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ jobId }),
+        }).catch(() => {});
+      }
+
       // send encrypted result to buyer via callback if pubkey provided
       if (callback_url) {
         const output = buyer_pubkey ? encrypt(buyer_pubkey, plaintext) : plaintext;
@@ -169,6 +185,7 @@ export async function startSeller(sellerCfg: SellerConfig) {
           capabilities: sellerCfg.capabilities,
           priceUsdt: sellerCfg.priceUsdt,
           wallet: signer.address,
+          ...(agentNftId && { agentNftId }),
         }),
       }).catch(() => {}); // non-fatal
       heartbeat();
