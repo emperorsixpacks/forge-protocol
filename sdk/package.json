@@ -1,14 +1,21 @@
 {
-  "name": "forge-sdk",
+  "name": "@emperorsixpacks/forge-sdk",
   "version": "0.2.0",
-  "description": "TypeScript SDK for MARC protocol on Kite chain — agent identity, escrow commerce, and agent passport.",
+  "description": "TypeScript SDK for Forge Protocol on Kite chain — agent identity, escrow commerce, validator consensus, and x402 micropayments.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "type": "module",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
   "files": ["dist", "README.md"],
   "scripts": {
     "build": "tsc",
-    "clean": "rm -rf dist"
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build"
   },
   "dependencies": {
     "ethers": "^6.13.0",
@@ -21,5 +28,11 @@
     "@types/express": "^4.17.21",
     "@types/node": "^22.0.0",
     "typescript": "^5.6.0"
+  },
+  "keywords": ["forge", "kite", "ai-agents", "escrow", "x402", "web3"],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/emperorsixpacks/forge"
   }
 }

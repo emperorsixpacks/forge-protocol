@@ -30,7 +30,7 @@ Forge is a four-layer protocol that gives AI agents everything they need to tran
 - 6 Groq-powered seller agents doing real work, paid in USDT
 - 3 validator agents that independently evaluate deliverables and vote on-chain
 - Interactive dashboard + buyer TUI
-- CLI (`forge`) for non-developer buyers
+- CLI (`@emperorsixpacks/forge`) for non-developer buyers
 
 Each agent is defined by a `SKILL.md` — a portable instruction file following the [Agent Skills open standard](https://agentskills.io/specification). Skills are plain Markdown, version-controlled, and swappable without touching agent code.
 
@@ -129,13 +129,13 @@ bear-protocol/
 ### 1. Install the SDK
 
 ```bash
-npm install forge-sdk
+npm install @emperorsixpacks/forge-sdk
 ```
 
 ### 2. Set up your buyer wallet
 
 ```bash
-npx forge setup
+npx @emperorsixpacks/forge setup
 ```
 
 Fund the generated address:
@@ -144,14 +144,14 @@ Fund the generated address:
 
 Then wait for funds:
 ```bash
-npx forge setup --wait
+npx @emperorsixpacks/forge setup --wait
 ```
 
 ### 3. Hire an agent
 
 ```bash
-npx forge list
-npx forge hire http://localhost:4501 "Draft an email to our investors about the Q3 results"
+npx @emperorsixpacks/forge list
+npx @emperorsixpacks/forge hire http://localhost:4501 "Draft an email to our investors about the Q3 results"
 ```
 
 Payment releases automatically once validators reach consensus — no manual approval needed.
@@ -161,11 +161,11 @@ Payment releases automatically once validators reach consensus — no manual app
 ## SDK Usage
 
 ```bash
-npm install forge-sdk
+npm install @emperorsixpacks/forge-sdk
 ```
 
 ```typescript
-import { CommerceClient, IdentityClient, KITE_TESTNET } from "forge-sdk";
+import { CommerceClient, IdentityClient, KITE_TESTNET } from "@emperorsixpacks/forge-sdk";
 import { ethers } from "ethers";
 
 const signer = new ethers.Wallet(process.env.PRIVATE_KEY!, provider);
@@ -194,7 +194,7 @@ await commerce.submit(jobId, "ipfs://deliverable-hash");
 ### Become a validator
 
 ```typescript
-import { ValidatorConsensusClient } from "forge-sdk";
+import { ValidatorConsensusClient } from "@emperorsixpacks/forge-sdk";
 
 const consensus = new ValidatorConsensusClient(cfg);
 await consensus.stake(1_000_000n); // stake 1 USDT to join validator pool
@@ -202,8 +202,8 @@ await consensus.stake(1_000_000n); // stake 1 USDT to join validator pool
 
 Or via CLI:
 ```bash
-npx tsx cli/forge.ts validator stake 1
-npx tsx cli/forge.ts validator status
+npx @emperorsixpacks/forge validator stake 1
+npx @emperorsixpacks/forge validator status
 ```
 
 ---
@@ -243,7 +243,7 @@ await consensus.depositRewards(amount);
 - **TypeScript SDK:** ethers v6
 - **AI Agents:** Groq Llama 3.3 70B
 - **Dashboard:** Express + vanilla JS SPA
-- **CLI:** tsx
+- **CLI:** `@emperorsixpacks/forge` (npm)
 
 ---
 

@@ -2,7 +2,7 @@ import { homedir } from "node:os";
 import { join } from "node:path";
 import { existsSync, mkdirSync, readFileSync, writeFileSync } from "node:fs";
 import { ethers } from "ethers";
-import { KITE_TESTNET } from "forge-sdk";
+import { KITE_TESTNET } from "@emperorsixpacks/forge-sdk";
 
 const CONFIG_PATH = join(homedir(), ".forge", "config.json");
 

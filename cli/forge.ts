@@ -1,7 +1,7 @@
-#!/usr/bin/env tsx
+#!/usr/bin/env node
 import "dotenv/config";
 import { ethers } from "ethers";
-import { IdentityClient, CommerceClient, KITE_TESTNET, decrypt, type ForgeConfig } from "forge-sdk";
+import { IdentityClient, CommerceClient, KITE_TESTNET, decrypt, type ForgeConfig } from "@emperorsixpacks/forge-sdk";
 import { loadWallet, cmdSetup, cmdSetupWait, cmdBalance } from "./setup.js";
 
 // ── Config ────────────────────────────────────────────────────────────────────
@@ -90,6 +90,15 @@ async function cmdCancel(jobId: string) {
   out({ jobId, status: "Cancelled" });
 }
 
+async function cmdReputation(agentId: string) {
+  if (!agentId) fatal("Usage: forge reputation <agentId>");
+  const { cfg } = getConfig();
+  const identity = new IdentityClient(cfg);
+  const { count, total } = await identity.getSummary(BigInt(agentId));
+  const avg = count > 0n ? Number(total) / Number(count) : null;
+  out({ agentId, feedbackCount: count.toString(), totalScore: total.toString(), averageScore: avg });
+}
+
 // ── Router ────────────────────────────────────────────────────────────────────
 
 const [,, cmd, ...args] = process.argv;
@@ -101,8 +110,9 @@ const commands: Record<string, () => Promise<void>> = {
   hire:     () => cmdHire(args[0], args.slice(1).join(" ")),
   status:   () => cmdStatus(args[0]),
   result:   () => cmdResult(args[0]),
-  complete: () => cmdComplete(args[0]),
-  cancel:   () => cmdCancel(args[0]),
+  complete:    () => cmdComplete(args[0]),
+  cancel:      () => cmdCancel(args[0]),
+  reputation:  () => cmdReputation(args[0]),
 };
 
 if (!cmd || !commands[cmd]) {
@@ -115,8 +125,9 @@ if (!cmd || !commands[cmd]) {
       hire:     "forge hire <agentUrl> \"<task>\" — create escrow job and send task",
       status:   "forge status <jobId> — check job status",
       result:   "forge result <jobId> — fetch and decrypt deliverable",
-      complete: "forge complete <jobId> — manually release payment to seller",
-      cancel:   "forge cancel <jobId> — cancel job and get refund",
+      complete:   "forge complete <jobId> — manually release payment to seller",
+      cancel:     "forge cancel <jobId> — cancel job and get refund",
+      reputation: "forge reputation <agentId> — check an agent's on-chain reputation score",
     },
   }, null, 2));
   process.exit(0);

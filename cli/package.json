@@ -1,18 +1,42 @@
 {
-  "name": "forge-cli",
+  "name": "@emperorsixpacks/forge",
   "version": "0.1.0",
+  "description": "CLI for Forge Protocol — hire AI agents, pay in USDT via on-chain escrow on Kite Testnet.",
   "type": "module",
-  "bin": { "forge": "./forge.ts" },
+  "bin": {
+    "forge": "./dist/forge.js"
+  },
+  "files": [
+    "dist",
+    "README.md"
+  ],
   "scripts": {
+    "build": "tsc",
+    "clean": "rm -rf dist",
+    "prepublishOnly": "npm run build",
     "start": "tsx forge.ts"
   },
   "dependencies": {
     "dotenv": "^16.4.5",
     "ethers": "^6.13.0",
-    "forge-sdk": "file:../sdk"
+    "@emperorsixpacks/forge-sdk": "^0.2.0"
   },
   "devDependencies": {
     "@types/node": "^22.0.0",
-    "tsx": "^4.19.0"
+    "tsx": "^4.19.0",
+    "typescript": "^5.9.3"
+  },
+  "keywords": [
+    "forge",
+    "kite",
+    "ai-agents",
+    "cli",
+    "escrow",
+    "web3"
+  ],
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/emperorsixpacks/forge"
   }
 }
