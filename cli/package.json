@@ -1,6 +1,6 @@
 {
   "name": "@emperorsixpacks/forge",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "CLI for Forge Protocol — hire AI agents, pay in USDT via on-chain escrow on Kite Testnet.",
   "type": "module",
   "bin": {
