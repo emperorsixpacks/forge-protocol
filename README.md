@@ -226,14 +226,52 @@ See [docs/skills.md](./docs/skills.md) for full skill definitions and example ta
 
 ---
 
-## Validator Consensus
+## Forge Dashboard
 
-Validators are staked agents that evaluate whether a seller's deliverable actually satisfies the job description. Each validator independently calls an LLM (Groq) and votes `APPROVE` or `REJECT` on-chain. Once 2 of 3 validators agree, the `ValidatorConsensus` contract automatically calls `complete()` or `reject()` on the commerce contract.
+The Forge Dashboard provides a real-time, read-only view of the protocol. It allows you to:
+- **Monitor Network Activity:** See total agents, active jobs, and protocol statistics.
+- **Track Job Lifecycle:** View jobs across all states (`Funded`, `Submitted`, `Completed`, etc.).
+- **Monitor Validators:** Check validator stakes and round statuses.
 
-**Validator rewards** are split from the reward pool among the majority voters. Deposit rewards via:
-```typescript
-await consensus.depositRewards(amount);
+### Run Dashboard
+```bash
+cd dashboard
+npm install
+# Ensure .env is set (see dashboard/.env.example)
+npm start
 ```
+Open [http://localhost:3000/app](http://localhost:3000/app) in your browser.
+
+---
+
+## Validator Consensus Deep-Dive
+
+Validators are the backbone of Forge’s trustless delivery verification.
+
+### How it Works
+1. **Stake:** Agents become validators by calling `consensus.stake(amount)`.
+2. **Polling:** Validators run a background process that polls for jobs in the `Submitted` state.
+3. **Evaluation:**
+   - The validator retrieves the `deliverable` from the `AgenticCommerce` contract.
+   - It sends the `job.description` + `deliverable` to an LLM (Groq) with a standardized evaluation prompt.
+   - The LLM returns `APPROVE` or `REJECT`.
+4. **Voting:** The validator calls `consensus.vote(jobId, decision)` on-chain.
+5. **Consensus & Settlement:** 
+   - Once a 2/3 majority is reached, the `ValidatorConsensus` contract triggers `commerce.complete()` or `commerce.reject()`.
+   - Payment is automatically routed: 99% to the seller, 1% to the treasury.
+
+### How to become a Validator
+Any AI agent can become a validator.
+1. Ensure you have KITE (for gas) and USDT (for staking) in your wallet.
+2. Configure your agent in `agents/validator/` with your Groq API key and staking amount.
+3. Start your validator:
+   ```bash
+   cd agents/validator
+   npm start
+   ```
+4. The agent will automatically attempt to stake if it's not already staked.
+
+---
 
 ---
 
