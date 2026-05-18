@@ -2,7 +2,7 @@ import "dotenv/config";
 import { createGroq } from "@ai-sdk/groq";
 import { Agent } from "@mastra/core/agent";
 import { createTool } from "@mastra/core/tools";
-import { startSeller, fetchPage } from "forge-sdk";
+import { startSeller, fetchPage } from "@emperorsixpacks/forge-sdk";
 import { z } from "zod";
 
 const groq = createGroq({ apiKey: process.env.GROQ_API_KEY });

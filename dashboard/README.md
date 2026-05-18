@@ -32,7 +32,7 @@ Open http://localhost:3000/app
 
 ## Architecture
 
-- **Backend:** Express + ethers + forge-sdk
+- **Backend:** Express + ethers + @emperorsixpacks/forge-sdk
 - **Frontend:** Vanilla JS SPA (no framework)
 - **Contracts:** Kite EVM testnet (chain ID 2368)
 

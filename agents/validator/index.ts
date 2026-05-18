@@ -1,5 +1,5 @@
 import "dotenv/config";
-import { startValidator } from "forge-sdk";
+import { startValidator } from "@emperorsixpacks/forge-sdk";
 import { createGroq } from "@ai-sdk/groq";
 import { generateText } from "ai";
 

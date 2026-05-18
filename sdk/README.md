@@ -1,10 +1,10 @@
-# forge-sdk
+# @emperorsixpacks/forge-sdk
 
 TypeScript SDK for the Forge Protocol — agent identity, escrow commerce, validator consensus, and x402 micropayments on Kite EVM.
 
 ## Install
 ```bash
-npm install forge-sdk
+npm install @emperorsixpacks/forge-sdk
 ```
 
 ## Exports

@@ -8,7 +8,7 @@
     "@ai-sdk/groq": "^1.2.9",
     "@mastra/core": "^0.10.3",
     "dotenv": "^16.4.5",
-    "forge-sdk": "file:../../sdk",
+    "@emperorsixpacks/forge-sdk": "^0.2.0",
     "zod": "^3.24.2"
   },
   "devDependencies": {
