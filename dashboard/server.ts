@@ -17,8 +17,8 @@ import {
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const app = express();
 app.use(express.json());
-app.use("/", express.static(path.join(__dirname, "public", "landing")));
-app.use("/app", express.static(path.join(__dirname, "public")));
+app.use("/app", express.static(path.join(__dirname, "public", "app-ui")));
+app.use("/", express.static(path.join(__dirname, "public")));
 
 // Serialize bigint → string for JSON
 function serial(v: unknown): unknown {
@@ -121,7 +121,7 @@ app.get("/api/balance/:address", async (req, res) => {
 
 // SPA fallback
 app.get("/app/*", (_req, res) =>
-  res.sendFile(path.join(__dirname, "public", "index.html"))
+  res.sendFile(path.join(__dirname, "public", "app-ui", "index.html"))
 );
 
 const PORT = Number(process.env.DASHBOARD_PORT ?? 3000);
