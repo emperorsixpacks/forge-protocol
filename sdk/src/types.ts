@@ -47,6 +47,7 @@ export interface ForgeConfig {
   validatorConsensusContract: Address;
   /** USDT on Kite: 0x0fF5393387ad2f9f691FD6Fd28e07E3969e27e63 */
   usdtToken: Address;
+  registryUrl?: string;
   onTx?: (hash: string, method: string) => void;
 }
 
@@ -58,7 +59,7 @@ export interface LLMProvider {
 export const KITE_TESTNET = {
   chainId: 2368,
   rpcUrl: "https://rpc-testnet.gokite.ai/",
-  registryUrl: "http://localhost:3001", // TODO: swap to hosted URL when deployed
+  registryUrl: "https://forge-protocol-el9p.onrender.com", // TODO: swap to hosted URL when deployed
   identityContract: "0x3e0Ad2339f8e88Ff07AF2E515428527a8DF1E96A" as Address,
   commerceContract: "0xeCee1A2115a5A2c6279Bf88870e658ed813374D0" as Address,
   passportContract: "0xAe325718BdD9F07C402B8544fBbB019FD8b0A36C" as Address,

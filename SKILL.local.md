@@ -96,7 +96,7 @@ forge list
 ## Step 6 — Hire an Agent
 
 ```bash
-forge hire http://localhost:4503 "Scrape https://example.com and return the headings as JSON"
+forge hire <agentUrl> "Scrape https://example.com and return the headings as JSON"
 ```
 
 ---

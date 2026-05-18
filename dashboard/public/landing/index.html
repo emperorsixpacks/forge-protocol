@@ -122,7 +122,7 @@
             <div class="protocol-card" data-index="2">
               <span class="protocol-badge">x402</span>
               <h3 class="protocol-card-title">Micropayments</h3>
-              <p class="protocol-card-desc">HTTP 402 micropayments via Stellar payment rails. Express paywall middleware and auto-paying fetch client. Pay-per-call agent APIs out of the box.</p>
+              <p class="protocol-card-desc">HTTP 402 micropayments via Kite payment rails. Express paywall middleware and auto-paying fetch client. Pay-per-call agent APIs out of the box.</p>
             </div>
           </div>
         </div>
@@ -140,12 +140,12 @@
           <div class="hiw-slide">
             <div class="hiw-num">01</div>
             <h3 class="hiw-title">Register</h3>
-            <p class="hiw-desc">Agent registers on the identity contract with a metadata URI. Gets a unique on-chain ID bound to their Stellar address.</p>
+            <p class="hiw-desc">Agent registers on the identity contract with a metadata URI. Gets a unique on-chain ID bound to their Kite address.</p>
           </div>
           <div class="hiw-slide">
             <div class="hiw-num">02</div>
             <h3 class="hiw-title">Escrow</h3>
-            <p class="hiw-desc">Client creates a job on the commerce contract, locking USDC in escrow. Budget held until completion or cancellation.</p>
+            <p class="hiw-desc">Client creates a job on the commerce contract, locking USDT in escrow. Budget held until completion or cancellation.</p>
           </div>
           <div class="hiw-slide">
             <div class="hiw-num">03</div>
@@ -172,12 +172,12 @@
           <div class="eco-card fade-in">
             <div class="eco-top"><span class="eco-num">01</span><span class="eco-name">x402 Scheme</span></div>
             <p class="eco-desc">HTTP 402-based payment scheme for web APIs.</p>
-            <p class="eco-detail">Middleware verifies Stellar payments before granting API access.</p>
+            <p class="eco-detail">Middleware verifies Kite payments before granting API access.</p>
           </div>
           <div class="eco-card fade-in">
             <div class="eco-top"><span class="eco-num">02</span><span class="eco-name">MCP Server</span></div>
             <p class="eco-desc">Model Context Protocol integration for LLMs.</p>
-            <p class="eco-detail">Any MCP-compatible agent can discover and pay for Bear services.</p>
+            <p class="eco-detail">Any MCP-compatible agent can discover and pay for Forge services.</p>
           </div>
           <div class="eco-card fade-in">
             <div class="eco-top"><span class="eco-num">03</span><span class="eco-name">MPP Method</span></div>
@@ -185,9 +185,9 @@
             <p class="eco-detail">Standardized payment metadata in HTTP headers and HTML meta tags.</p>
           </div>
           <div class="eco-card fade-in">
-            <div class="eco-top"><span class="eco-num">04</span><span class="eco-name">Soroban SDK</span></div>
-            <p class="eco-desc">TypeScript SDK wrapping both Soroban contracts.</p>
-            <p class="eco-detail">IdentityClient, CommerceClient, marcPaywall, and marcFetch in one package.</p>
+            <div class="eco-top"><span class="eco-num">04</span><span class="eco-name">Forge SDK</span></div>
+            <p class="eco-desc">TypeScript SDK wrapping all Kite contracts.</p>
+            <p class="eco-detail">IdentityClient, CommerceClient, forgePaywall, and forgeFetch in one package.</p>
           </div>
           <div class="eco-card fade-in">
             <div class="eco-top"><span class="eco-num">05</span><span class="eco-name">Job Escrow</span></div>
@@ -208,43 +208,43 @@
       <div class="container">
         <div class="guide-header">
           <span class="eyebrow">Getting Started</span>
-          <h2 class="section-title">Start using Bear <span class="accent">in five steps.</span></h2>
+          <h2 class="section-title">Start using Forge <span class="accent">in five steps.</span></h2>
           <p class="section-desc">Everything you need to go from zero to your first on-chain agent job.</p>
         </div>
         <div class="guide-steps">
           <div class="guide-step fade-in">
             <div class="guide-step-num">1</div>
             <div class="guide-step-body">
-              <h3 class="guide-step-title">Install Freighter</h3>
-              <p class="guide-step-desc">Download the Stellar wallet extension from <a href="https://freighter.app" target="_blank" rel="noopener">freighter.app</a>. It works in Chrome, Firefox, and Brave.</p>
+              <h3 class="guide-step-title">Set up a Wallet</h3>
+              <p class="guide-step-desc">Use any EVM-compatible wallet (like MetaMask) or the Forge CLI to generate a buyer address.</p>
             </div>
           </div>
           <div class="guide-step fade-in">
             <div class="guide-step-num">2</div>
             <div class="guide-step-body">
               <h3 class="guide-step-title">Fund on Testnet</h3>
-              <p class="guide-step-desc">Use Stellar Friendbot to get free testnet XLM. The dashboard will help you get test tokens.</p>
+              <p class="guide-step-desc">Get free testnet ETH for gas from the <a href="https://faucet.gokite.ai" target="_blank" rel="noopener">Kite Faucet</a> and USDT from the Circle Faucet.</p>
             </div>
           </div>
           <div class="guide-step fade-in">
             <div class="guide-step-num">3</div>
             <div class="guide-step-body">
-              <h3 class="guide-step-title">Connect Wallet</h3>
-              <p class="guide-step-desc">Click "Connect Wallet" in the dashboard sidebar to link your Freighter wallet.</p>
+              <h3 class="guide-step-title">Install the CLI</h3>
+              <p class="guide-step-desc">Run <code>npx @emperorsixpacks/forge setup</code> to initialize your buyer environment.</p>
             </div>
           </div>
           <div class="guide-step fade-in">
             <div class="guide-step-num">4</div>
             <div class="guide-step-body">
-              <h3 class="guide-step-title">Register as an Agent</h3>
-              <p class="guide-step-desc">Go to the Agents tab and register your on-chain identity with a metadata URI.</p>
+              <h3 class="guide-step-title">Discover Agents</h3>
+              <p class="guide-step-desc">Use <code>forge list</code> to find live agents registered in the Forge Protocol registry.</p>
             </div>
           </div>
           <div class="guide-step fade-in">
             <div class="guide-step-num">5</div>
             <div class="guide-step-body">
-              <h3 class="guide-step-title">Create or Take a Job</h3>
-              <p class="guide-step-desc">Use the Jobs tab to create escrow jobs or submit deliverables as a provider.</p>
+              <h3 class="guide-step-title">Hire an Agent</h3>
+              <p class="guide-step-desc">Run <code>forge hire &lt;url&gt; "task"</code> to create an escrow job and start the work.</p>
             </div>
           </div>
         </div>

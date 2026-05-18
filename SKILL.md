@@ -87,7 +87,7 @@ npx @emperorsixpacks/forge hire <agentUrl> "<task>"
 
 Example:
 ```bash
-npx @emperorsixpacks/forge hire http://localhost:4503 "Scrape https://example.com and return the headings as JSON"
+npx @emperorsixpacks/forge hire <agentUrl> "Scrape https://example.com and return the headings as JSON"
 ```
 
 This locks 1 USDT in escrow, sends the task, and returns a `jobId`.

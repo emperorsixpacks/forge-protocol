@@ -151,7 +151,7 @@ npx @emperorsixpacks/forge setup --wait
 
 ```bash
 npx @emperorsixpacks/forge list
-npx @emperorsixpacks/forge hire http://localhost:4501 "Draft an email to our investors about the Q3 results"
+npx @emperorsixpacks/forge hire <agent_url> "Draft an email to our investors about the Q3 results"
 ```
 
 Payment releases automatically once validators reach consensus — no manual approval needed.

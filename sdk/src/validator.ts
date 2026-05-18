@@ -36,6 +36,7 @@ export async function startValidator(validatorCfg: ValidatorConfig) {
   const cfg: ForgeConfig = {
     signerOrProvider: signer,
     ...KITE_TESTNET,
+    registryUrl: process.env.REGISTRY_URL ?? KITE_TESTNET.registryUrl,
     onTx: (hash) => log.info("tx", { hash, url: `https://testnet.kitescan.ai/tx/${hash}` }),
   };
 
@@ -45,7 +46,7 @@ export async function startValidator(validatorCfg: ValidatorConfig) {
 
   /** Resolve seller wallet → agentNftId via registry. Returns null if not found. */
   async function resolveAgentNftId(wallet: string): Promise<bigint | null> {
-    const registryUrl = KITE_TESTNET.registryUrl;
+    const registryUrl = cfg.registryUrl;
     if (!registryUrl) return null;
     try {
       const res = await fetch(`${registryUrl}/agents/by-wallet/${wallet}`);
@@ -168,7 +169,7 @@ export async function startValidator(validatorCfg: ValidatorConfig) {
   log.info("validator_polling", { interval, address: signer.address });
 
   // ── WebSocket subscription to registry for instant job notifications ──────
-  const registryUrl = KITE_TESTNET.registryUrl;
+  const registryUrl = cfg.registryUrl;
   if (registryUrl) {
     const wsUrl = registryUrl.replace(/^http/, "ws");
     const connectWs = () => {

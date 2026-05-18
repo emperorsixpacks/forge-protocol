@@ -6,7 +6,7 @@ import { loadWallet, cmdSetup, cmdSetupWait, cmdBalance } from "./setup.js";
 
 // ── Config ────────────────────────────────────────────────────────────────────
 
-const SELLER_URLS = (process.env.SELLER_URLS ?? "http://localhost:4501,http://localhost:4502,http://localhost:4503,http://localhost:4504,http://localhost:4505,http://localhost:4506").split(",");
+const SELLER_URLS = (process.env.SELLER_URLS ?? "").split(",").filter(Boolean);
 
 function getConfig(): { cfg: ForgeConfig; signer: ethers.Wallet } {
   const { privateKey } = loadWallet();

@@ -41,6 +41,7 @@ export async function startSeller(sellerCfg: SellerConfig) {
   const cfg: ForgeConfig = {
     signerOrProvider: signer,
     ...KITE_TESTNET,
+    registryUrl: process.env.REGISTRY_URL ?? KITE_TESTNET.registryUrl,
     ...(process.env.VALIDATOR_CONSENSUS_CONTRACT && { validatorConsensusContract: process.env.VALIDATOR_CONSENSUS_CONTRACT }),
     onTx: (hash) => log.info("tx", { hash, url: `https://testnet.kitescan.ai/tx/${hash}` }),
   };
@@ -147,7 +148,7 @@ export async function startSeller(sellerCfg: SellerConfig) {
       }
 
       // ping registry so validators are notified immediately
-      const registryUrl = KITE_TESTNET.registryUrl;
+      const registryUrl = cfg.registryUrl;
       if (registryUrl) {
         fetch(`${registryUrl}/notify`, {
           method: "POST",
@@ -173,7 +174,7 @@ export async function startSeller(sellerCfg: SellerConfig) {
     log.info("seller_started", { port: sellerCfg.port });
 
     // register with registry and heartbeat every 30s
-    const registryUrl = KITE_TESTNET.registryUrl;
+    const registryUrl = cfg.registryUrl;
     if (registryUrl) {
       const heartbeat = () => fetch(`${registryUrl}/register`, {
         method: "POST",
