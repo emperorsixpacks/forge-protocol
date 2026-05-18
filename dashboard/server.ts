@@ -2,7 +2,7 @@ import express from "express";
 import path from "path";
 import { fileURLToPath } from "url";
 import { ethers } from "ethers";
-import { KITE_TESTNET } from "forge-sdk";
+import { KITE_TESTNET } from "@emperorsixpacks/forge-sdk";
 import { provider, cfg } from "./lib/config.js";
 import {
   getAllAgents,
@@ -36,7 +36,7 @@ function serial(v: unknown): unknown {
 
 const STATUS_NAMES = ["Funded", "Submitted", "Completed", "Rejected", "Cancelled"];
 
-function formatJob(j: Awaited<ReturnType<typeof commerce.getJob>>) {
+function formatJob(j: any) {
   return {
     id: j.id.toString(),
     client: j.client,

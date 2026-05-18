@@ -1,5 +1,5 @@
-import { IdentityClient, CommerceClient, ValidatorConsensusClient } from "forge-sdk";
-import type { Agent, Job } from "forge-sdk";
+import { IdentityClient, CommerceClient, ValidatorConsensusClient } from "@emperorsixpacks/forge-sdk";
+import type { Agent, Job } from "@emperorsixpacks/forge-sdk";
 import { cfg, KNOWN_VALIDATORS } from "./config.js";
 
 export const identity = new IdentityClient(cfg);

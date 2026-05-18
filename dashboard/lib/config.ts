@@ -1,6 +1,6 @@
 import "dotenv/config";
 import { ethers } from "ethers";
-import { KITE_TESTNET, type ForgeConfig } from "forge-sdk";
+import { KITE_TESTNET, type ForgeConfig } from "@emperorsixpacks/forge-sdk";
 
 export const provider = new ethers.JsonRpcProvider(
   process.env.RPC_URL ?? KITE_TESTNET.rpcUrl,
